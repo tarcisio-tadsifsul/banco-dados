@@ -1,0 +1,1637 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>9.9. Funções e operadores de data e hora - PostgreSQL 14.5</title><link rel="stylesheet" type="text/css" href="./9.9. Funções e operadores de data e hora - PostgreSQL 14.5_files/stylesheet.css"><link rev="made" href="https://halleyoliv.gitlab.io/pgdocptbr/pgsql-docs@lists.postgresql.org"><meta name="generator" content="DocBook XSL Stylesheets Vsnapshot"><meta name="keywords" content="PostgreSQL, Função, Operador, Tipo de dados"><link rel="prev" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-formatting.html" title="9.8. Funções de formatação de tipo de dados"><link rel="next" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-enum.html" title="9.10. Funções de suporte para tipos de dados enum (enumeração)">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="”content-language”" content="”pt-br”/">
+<link rel="icon" type="image/svg+xml" sizes="any" href="https://halleyoliv.gitlab.io/pgdocptbr/extras/favicon-120x120.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://halleyoliv.gitlab.io/pgdocptbr/extras/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://halleyoliv.gitlab.io/pgdocptbr/extras/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="https://halleyoliv.gitlab.io/pgdocptbr/extras/favicon-48x48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://halleyoliv.gitlab.io/pgdocptbr/extras/apple-touch-icon.png">
+<!-- Google tag (gtag.js) -->
+<script async="" src="./9.9. Funções e operadores de data e hora - PostgreSQL 14.5_files/js"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-14EWK4RQTD');
+</script>
+
+  </head><body id="docContent" class="container-fluid"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navheader"><div id="docHeader"><div id="docHeaderLogo"><a href="https://gitlab.com/HalleyOliv/pgdocptbr" title="Páginas web da documentação no GitLab"><img src="./9.9. Funções e operadores de data e hora - PostgreSQL 14.5_files/cab_logo.png" width="206" height="80" alt="Projeto no GitLab"></a></div></div><table width="100%" summary="Navigation header"><tbody><tr><td class="strong" colspan="3" align="center">9.9. Funções e operadores de data e hora</td></tr><tr><td class="short" width="10%" align="left"><a accesskey="p" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-formatting.html" title="9.8. Funções de formatação de tipo de dados">Anterior</a>&nbsp;</td><td class="strong short" width="80%" align="center" rowspan="2">Capítulo 9. Funções e operadores</td><td class="short" width="10%" align="right">&nbsp;<a accesskey="n" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-enum.html" title="9.10. Funções de suporte para tipos de dados enum (enumeração)">Próxima</a></td></tr><tr><td class="short" width="10%" align="left"><a accesskey="u" href="https://halleyoliv.gitlab.io/pgdocptbr/functions.html" title="Capítulo 9. Funções e operadores">Acima</a></td><td class="short" width="10%" align="right"><a accesskey="h" href="https://halleyoliv.gitlab.io/pgdocptbr/index.html" title="Documentação do PostgreSQL 14.5">Principal</a></td></tr></tbody></table><hr></div>
+  <div style="background-color: NavajoWhite;">Está disponível uma versão mais recente desta página. Você está vendo uma versão antiga.
+  <a class="ulink" href="https://pgdocptbr18-11aacb.gitlab.io/functions-datetime.html" target="_top">Veja a nova</a></div>
+  <div class="sect1" id="FUNCTIONS-DATETIME"><div class="titlepage"><div><div><h2 class="title" style="clear: both">9.9. Funções e operadores de data e hora</h2></div></div></div><div class="toc"><dl class="toc"><dt><span class="sect2"><a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT">9.9.1. EXTRACT, date_part</a></span></dt><dt><span class="sect2"><a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC">9.9.2. Função date_trunc</a></span></dt><dt><span class="sect2"><a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-BIN">9.9.3. Função date_bin</a></span></dt><dt><span class="sect2"><a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-ZONECONVERT">9.9.4. Operador AT TIME ZONE</a></span></dt><dt><span class="sect2"><a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT">9.9.5. Data e hora corrente</a></span></dt><dt><span class="sect2"><a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-DELAY">9.9.6. Atrasando a execução</a></span></dt><dt><span class="sect2"><a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#id-1.5.8.16.19">9.9.7. Comparação entre SGBDs</a></span></dt></dl></div><p>
+   A <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-TABLE" title="Tabela 9.32. Funções de data e hora">Tabela&nbsp;9.32</a> mostra as funções
+   disponíveis para processamento de valor de data e hora, com os
+   detalhes aparecendo nas subseções que se seguem.
+   A <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#OPERATORS-DATETIME-TABLE" title="Tabela 9.31. Operadores da data e hora">Tabela&nbsp;9.31</a> mostra o comportamento
+   dos operadores aritméticos básicos (<code class="literal">+</code>,
+   <code class="literal">*</code>, etc.).
+   Para as funções de formatação, deve ser consultado
+   <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-formatting.html" title="9.8. Funções de formatação de tipo de dados">Funções de formatação de tipo de dados</a>.
+   Você deve estar familiarizado com as informações básicas sobre os
+   tipos de dados de data e hora descritos em
+   <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/datatype-datetime.html" title="8.5. Tipos de dados de data e hora">Tipos de dados de data e hora</a>.
+  </p><p>
+   Além dessas funções, estão disponíveis para os tipos de dados de data
+   e hora os operadores de comparação usuais mostrados na
+   <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-comparison.html#FUNCTIONS-COMPARISON-OP-TABLE" title="Tabela 9.1. Operadores de comparação">Tabela&nbsp;9.1</a>.
+   Datas e carimbos de data e hora (com ou sem zona horária) são todos
+   comparáveis, enquanto as horas (com ou sem zona horária) e intervalos,
+   só podem ser comparados a outros valores do mesmo tipo de dados.
+   Ao comparar um carimbo de data e hora sem zona horária com um carimbo
+   de data e hora com zona horária, assume-se que o primeiro valor está
+   fornecido na zona horária especificada pelo parâmetro de configuração
+   <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/runtime-config-client.html#GUC-TIMEZONE">TimeZone</a>, sendo convertido para UTC para
+   comparação com o último valor (que já está em UTC internamente).
+   Da mesma forma, é assumido que um valor de data representa meia-noite
+   na zona horária da <code class="varname">TimeZone</code> ao compará-lo com um
+   carimbo de data e hora.
+  </p><p>
+   Na verdade, todas as funções e operadores descritos abaixo, que aceitam
+   entradas do tipo de dados <code class="type">time</code> ou <code class="type">timestamp</code>,
+   possuem duas formas alternativas: uma que aceita  os tipos de dados
+   <code class="type">time with time zone</code> ou <code class="type">timestamp with time zone</code>,
+   e outra que aceita os tipos de dados <code class="type">time without time zone</code>
+   ou <code class="type">timestamp without time zone</code>.
+   Por uma questão de brevidade, essas formas alternativas não são
+   mostradas separadamente.
+   Além disso, os operadores <code class="literal">+</code> e <code class="literal">*</code>
+   estão presentes em pares comutativos (por exemplo, o par
+   <code class="type">date</code> <code class="literal">+</code> <code class="type">integer</code> e
+   <code class="type">integer</code> <code class="literal">+</code> <code class="type">date</code>);
+   de cada um desses pares, apenas um é mostrado aqui.
+  </p><div class="table" id="OPERATORS-DATETIME-TABLE"><p class="title"><strong>Tabela 9.31. Operadores da data e hora</strong></p><div class="table-contents"><table class="table" summary="Operadores da data e hora" border="1"><colgroup><col></colgroup><thead><tr><th class="func_table_entry"><p class="func_signature">
+         Operador
+        </p>
+        <p>
+         Descrição
+        </p>
+        <p>
+         Exemplo(s)
+        </p></th></tr></thead><tbody><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">date</code> <code class="literal">+</code> <code class="type">integer</code>
+         → <code class="returnvalue">date</code>
+        </p>
+        <p>
+         Soma um número de dias a uma data
+        </p>
+        <p>
+         <code class="literal">date '2001-09-28' + 7</code>
+         → <code class="returnvalue">2001-10-05</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">date</code> <code class="literal">+</code> <code class="type">interval</code>
+         → <code class="returnvalue">timestamp</code>
+        </p>
+        <p>
+         Soma um intervalo a uma data
+        </p>
+        <p>
+         <code class="literal">date '2001-09-28' + interval '1 hour'</code>
+         → <code class="returnvalue">2001-09-28 01:00:00</code>
+         <a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#ftn.id-1.5.8.16.5.2.2.2.1.3.3" class="footnote"><sup class="footnote" id="id-1.5.8.16.5.2.2.2.1.3.3">[a]</sup></a>
+        </p>
+        </td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">date</code> <code class="literal">+</code> <code class="type">time</code>
+         → <code class="returnvalue">timestamp</code>
+        </p>
+        <p>
+         Soma uma hora do dia a uma data
+        </p>
+        <p>
+         <code class="literal">date '2001-09-28' + time '03:00'</code>
+         → <code class="returnvalue">2001-09-28 03:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">interval</code> <code class="literal">+</code> <code class="type">interval</code>
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Soma intervalos
+        </p>
+        <p>
+         <code class="literal">interval '1 day' + interval '1 hour'</code>
+         → <code class="returnvalue">1 day 01:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">timestamp</code> <code class="literal">+</code> <code class="type">interval</code>
+         → <code class="returnvalue">timestamp</code>
+        </p>
+        <p>
+         Soma um intervalo a um carimbo de data e hora
+        </p>
+        <p>
+         <code class="literal">timestamp '2001-09-28 01:00' + interval '23 hours'</code>
+         → <code class="returnvalue">2001-09-29 00:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">time</code> <code class="literal">+</code> <code class="type">interval</code>
+         → <code class="returnvalue">time</code>
+        </p>
+        <p>
+         Soma um intervalo a uma hora
+        </p>
+        <p>
+         <code class="literal">time '01:00' + interval '3 hours'</code>
+         → <code class="returnvalue">04:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="literal">-</code> <code class="type">interval</code>
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Inverte o sinal do intervalo
+        </p>
+        <p>
+         <code class="literal">- interval '23 hours'</code>
+         → <code class="returnvalue">-23:00:00</code>
+        </p>
+        <p>
+         <code class="literal">- interval '-23 hours'</code>
+         → <code class="returnvalue">23:00:00</code>
+        </p>
+        </td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">date</code> <code class="literal">-</code> <code class="type">date</code>
+         → <code class="returnvalue">integer</code>
+        </p>
+        <p>
+         Subtrai datas, produzindo o número de dias transcorridos
+        </p>
+        <p>
+         <code class="literal">date '2001-10-01' - date '2001-09-28'</code>
+         → <code class="returnvalue">3</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">date</code> <code class="literal">-</code> <code class="type">integer</code>
+         → <code class="returnvalue">date</code>
+        </p>
+        <p>
+         Subtrai um número de dias de uma data
+        </p>
+        <p>
+         <code class="literal">date '2001-10-01' - 7</code>
+         → <code class="returnvalue">2001-09-24</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">date</code> <code class="literal">-</code> <code class="type">interval</code>
+         → <code class="returnvalue">timestamp</code>
+        </p>
+        <p>
+         Subtrai um intervalo de uma data
+        </p>
+        <p>
+         <code class="literal">date '2001-09-28' - interval '1 hour'</code>
+         → <code class="returnvalue">2001-09-27 23:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">time</code> <code class="literal">-</code> <code class="type">time</code>
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Subtrai horas
+        </p>
+        <p>
+         <code class="literal">time '05:00' - time '03:00'</code>
+         → <code class="returnvalue">02:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">time</code> <code class="literal">-</code> <code class="type">interval</code>
+         → <code class="returnvalue">time</code>
+        </p>
+        <p>
+         Subtrai um intervalo de uma hora
+        </p>
+        <p>
+         <code class="literal">time '05:00' - interval '2 hours'</code>
+         → <code class="returnvalue">03:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">timestamp</code> <code class="literal">-</code> <code class="type">interval</code>
+         → <code class="returnvalue">timestamp</code>
+        </p>
+        <p>
+         Subtrai um intervalo de um carimbo de data e hora
+        </p>
+        <p>
+         <code class="literal">timestamp '2001-09-28 23:00' - interval '23 hours'</code>
+         → <code class="returnvalue">2001-09-28 00:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">interval</code> <code class="literal">-</code> <code class="type">interval</code>
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Subtrai intervalos
+        </p>
+        <p>
+         <code class="literal">interval '1 day' - interval '1 hour'</code>
+         → <code class="returnvalue">1 day -01:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">timestamp</code> <code class="literal">-</code> <code class="type">timestamp</code>
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Subtrai carimbos de data e hora (converte intervalos de 24
+         horas em dias, semelhante à função <code class="function">justify_hours()</code>)
+        </p>
+        <p>
+         <code class="literal">timestamp '2001-09-29 03:00' - timestamp '2001-07-27 12:00'</code>
+         → <code class="returnvalue">63 days 15:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">interval</code> <code class="literal">*</code> <code class="type">double precision</code>
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Multiplica um intervalo por um escalar
+        </p>
+        <p>
+         <code class="literal">interval '1 second' * 900</code>
+         → <code class="returnvalue">00:15:00</code>
+        </p>
+        <p>
+         <code class="literal">interval '1 day' * 21</code>
+         → <code class="returnvalue">21 days</code>
+        </p>
+        <p>
+         <code class="literal">interval '1 hour' * 3.5</code>
+         → <code class="returnvalue">03:30:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">interval</code> <code class="literal">/</code> <code class="type">double precision</code>
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Divide um intervalo por um escalar
+        </p>
+        <p>
+         <code class="literal">interval '1 hour' / 1.5</code>
+         → <code class="returnvalue">00:40:00</code>
+        </p></td></tr></tbody><tbody class="footnotes"><tr><td colspan="1"><div id="ftn.id-1.5.8.16.5.2.2.2.1.3.3" class="footnote"><p><a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#id-1.5.8.16.5.2.2.2.1.3.3" class="para"><sup class="para">[a] </sup></a>
+           <a class="ulink" href="https://oracle-base.com/articles/misc/oracle-dates-timestamps-and-intervals" target="_top">Oracle Dates, Timestamps and Intervals</a>:
+           No <span class="productname">Oracle</span> 21c o mesmo resultado
+           pode ser obtido usando
+           <code class="literal">TO_DATE('2001-09-28', 'YYYY-MM-DD') + INTERVAL '3600' SECOND</code>,
+           que também funciona no <span class="productname">PostgreSQL</span>
+           (N. T.)
+          </p></div></td></tr></tbody></table></div></div><br class="table-break"><div class="table" id="FUNCTIONS-DATETIME-TABLE"><p class="title"><strong>Tabela 9.32. Funções de data e hora</strong></p><div class="table-contents"><table class="table" summary="Funções de data e hora" border="1"><colgroup><col></colgroup><thead><tr><th class="func_table_entry"><p class="func_signature">
+         Função
+        </p>
+        <p>
+         Descrição
+        </p>
+        <p>
+         Exemplo(s)
+        </p></th></tr></thead><tbody><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.1.1.1.1" class="indexterm"></a>
+         <code class="function">age</code> ( <code class="type">timestamp</code>, <code class="type">timestamp</code> )
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Subtrai os argumentos, produzindo um resultado
+         <span class="quote">“<span class="quote">simbólico</span>”</span> que usa também anos e meses, em vez
+         de apenas dias
+        </p>
+        <p>
+         <code class="literal">age(timestamp '2001-04-10', timestamp '1957-06-13')</code>
+         → <code class="returnvalue">43 years 9 mons 27 days</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">age</code> ( <code class="type">timestamp</code> )
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Subtrai o argumento de <code class="function">current_date</code> (à meia-noite)
+        </p>
+        <p>
+         <code class="literal">age(timestamp '1957-06-13')</code>
+         → <code class="returnvalue">62 years 6 mons 10 days</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.3.1.1.1" class="indexterm"></a>
+         <code class="function">clock_timestamp</code> ( )
+         → <code class="returnvalue">timestamp with time zone</code>
+        </p>
+        <p>
+         Data e hora corrente (muda durante a execução da instrução);
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">clock_timestamp()</code>
+         → <code class="returnvalue">2019-12-23 14:39:53.662522-05</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.4.1.1.1" class="indexterm"></a>
+         <code class="function">current_date</code>
+         → <code class="returnvalue">date</code>
+        </p>
+        <p>
+         Data corrente; veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">current_date</code>
+         → <code class="returnvalue">2019-12-23</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.5.1.1.1" class="indexterm"></a>
+         <code class="function">current_time</code>
+         → <code class="returnvalue">time with time zone</code>
+        </p>
+        <p>
+         Hora corrente do dia; veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">current_time</code>
+         → <code class="returnvalue">14:39:53.662522-05</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">current_time</code> ( <code class="type">integer</code> )
+         → <code class="returnvalue">time with time zone</code>
+        </p>
+        <p>
+         Hora corrente do dia, com precisão limitada;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">current_time(2)</code>
+         → <code class="returnvalue">14:39:53.66-05</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.7.1.1.1" class="indexterm"></a>
+         <code class="function">current_timestamp</code>
+         → <code class="returnvalue">timestamp with time zone</code>
+        </p>
+        <p>
+         Data e hora correntes (início da transação corrente);
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">current_timestamp</code>
+         → <code class="returnvalue">2019-12-23 14:39:53.662522-05</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">current_timestamp</code> ( <code class="type">integer</code> )
+         → <code class="returnvalue">timestamp with time zone</code>
+        </p>
+        <p>
+         Data e hora correntes (início da transação corrente),
+         com precisão limitada;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">current_timestamp(0)</code>
+         → <code class="returnvalue">2019-12-23 14:39:53-05</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">date_bin</code> ( <code class="type">interval</code>, <code class="type">timestamp</code>, <code class="type">timestamp</code> )
+         → <code class="returnvalue">timestamp</code>
+        </p>
+        <p>
+         Coloca a entrada no intervalo especificado, alinhado com a
+         origem especificada;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-BIN" title="9.9.3. Função date_bin">Função date_bin</a>
+        </p>
+        <p>
+         <code class="literal">date_bin('15 minutes', timestamp '2001-02-16 20:38:40', timestamp '2001-02-16 20:05:00')</code>
+         → <code class="returnvalue">2001-02-16 20:35:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.10.1.1.1" class="indexterm"></a>
+         <code class="function">date_part</code> ( <code class="type">text</code>, <code class="type">timestamp</code> )
+         → <code class="returnvalue">double precision</code>
+        </p>
+        <p>
+         Extrai um subcampo de um carimbo de data e hora
+         (equivalente à função <code class="function">extract</code>);
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT" title="9.9.1. EXTRACT, date_part">EXTRACT, date_part</a>
+        </p>
+        <p>
+         <code class="literal">date_part('hour', timestamp '2001-02-16 20:38:40')</code>
+         → <code class="returnvalue">20</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">date_part</code> ( <code class="type">text</code>, <code class="type">interval</code> )
+         → <code class="returnvalue">double precision</code>
+        </p>
+        <p>
+         Extrai um subcampo de um intervalo
+         (equivalente à função <code class="function">extract</code>);
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT" title="9.9.1. EXTRACT, date_part">EXTRACT, date_part</a>
+        </p>
+        <p>
+         <code class="literal">date_part('month', interval '2 years 3 months')</code>
+         → <code class="returnvalue">3</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.12.1.1.1" class="indexterm"></a>
+         <code class="function">date_trunc</code> ( <code class="type">text</code>, <code class="type">timestamp</code> )
+         → <code class="returnvalue">timestamp</code>
+        </p>
+        <p>
+         Trunca para a precisão especificada;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC" title="9.9.2. Função date_trunc">Função date_trunc</a>
+        </p>
+        <p>
+         <code class="literal">date_trunc('hour', timestamp '2001-02-16 20:38:40')</code>
+         → <code class="returnvalue">2001-02-16 20:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">date_trunc</code> ( <code class="type">text</code>, <code class="type">timestamp with time zone</code>, <code class="type">text</code> )
+         → <code class="returnvalue">timestamp with time zone</code>
+        </p>
+        <p>
+         Trunca para a precisão especificada na zona horária especificada;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC" title="9.9.2. Função date_trunc">Função date_trunc</a>
+        </p>
+        <p>
+         <code class="literal">date_trunc('day', timestamptz '2001-02-16 20:38:40+00', 'Australia/Sydney')</code>
+         → <code class="returnvalue">2001-02-16 13:00:00+00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">date_trunc</code> ( <code class="type">text</code>, <code class="type">interval</code> )
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Trunca para a precisão especificada;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC" title="9.9.2. Função date_trunc">Função date_trunc</a>
+        </p>
+        <p>
+         <code class="literal">date_trunc('hour', interval '2 days 3 hours 40 minutes')</code>
+         → <code class="returnvalue">2 days 03:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.15.1.1.1" class="indexterm"></a>
+         <code class="function">extract</code> ( <em class="parameter"><code>campo</code></em> <code class="literal">from</code> <code class="type">timestamp</code> )
+         → <code class="returnvalue">numeric</code>
+        </p>
+        <p>
+         Extrai um subcampo de um carimbo de data e hora;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT" title="9.9.1. EXTRACT, date_part">EXTRACT, date_part</a>
+        </p>
+        <p>
+         <code class="literal">extract(hour from timestamp '2001-02-16 20:38:40')</code>
+         → <code class="returnvalue">20</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">extract</code> ( <em class="parameter"><code>campo</code></em> <code class="literal">from</code> <code class="type">interval</code> )
+         → <code class="returnvalue">numeric</code>
+        </p>
+        <p>
+         Extrai um subcampo de um intervalo;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT" title="9.9.1. EXTRACT, date_part">EXTRACT, date_part</a>
+        </p>
+        <p>
+         <code class="literal">extract(month from interval '2 years 3 months')</code>
+         → <code class="returnvalue">3</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.17.1.1.1" class="indexterm"></a>
+         <code class="function">isfinite</code> ( <code class="type">date</code> )
+         → <code class="returnvalue">boolean</code>
+        </p>
+        <p>
+         Teste para data finita (não +/-infinito)
+        </p>
+        <p>
+         <code class="literal">isfinite(date '2001-02-16')</code>
+         → <code class="returnvalue">true</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">isfinite</code> ( <code class="type">timestamp</code> )
+         → <code class="returnvalue">boolean</code>
+        </p>
+        <p>
+         Teste para carimbo de data e hora finito (não +/-infinito)
+        </p>
+        <p>
+         <code class="literal">isfinite(timestamp 'infinity')</code>
+         → <code class="returnvalue">false</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">isfinite</code> ( <code class="type">interval</code> )
+         → <code class="returnvalue">boolean</code>
+        </p>
+        <p>
+         Testa para um intervalo finito (no momento é sempre verdade)
+        </p>
+        <p>
+         <code class="literal">isfinite(interval '4 hours')</code>
+         → <code class="returnvalue">true</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.20.1.1.1" class="indexterm"></a>
+         <code class="function">justify_days</code> ( <code class="type">interval</code> )
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Ajusta o intervalo para que os períodos de 30 dias sejam
+         representados como meses
+        </p>
+        <p>
+         <code class="literal">justify_days(interval '35 days')</code>
+         → <code class="returnvalue">1 mon 5 days</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.21.1.1.1" class="indexterm"></a>
+         <code class="function">justify_hours</code> ( <code class="type">interval</code> )
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Ajusta o intervalo para que os períodos de 24 horas sejam
+         representados como dias
+        </p>
+        <p>
+         <code class="literal">justify_hours(interval '27 hours')</code>
+         → <code class="returnvalue">1 day 03:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.22.1.1.1" class="indexterm"></a>
+         <code class="function">justify_interval</code> ( <code class="type">interval</code> )
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Ajusta o intervalo usando as funções
+         <code class="function">justify_days</code> e
+         <code class="function">justify_hours</code>,
+         com ajustes de sinal adicionais
+        </p>
+        <p>
+         <code class="literal">justify_interval(interval '1 mon -1 hour')</code>
+         → <code class="returnvalue">29 days 23:00:00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.23.1.1.1" class="indexterm"></a>
+         <code class="function">localtime</code>
+         → <code class="returnvalue">time</code>
+        </p>
+        <p>
+         Hora corrente do dia;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">localtime</code>
+         → <code class="returnvalue">14:39:53.662522</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">localtime</code> ( <code class="type">integer</code> )
+         → <code class="returnvalue">time</code>
+        </p>
+        <p>
+         Hora corrente do dia, com precisão limitada;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">localtime(0)</code>
+         → <code class="returnvalue">14:39:53</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.25.1.1.1" class="indexterm"></a>
+         <code class="function">localtimestamp</code>
+         → <code class="returnvalue">timestamp</code>
+        </p>
+        <p>
+         Data e hora correntes (início da transação corrente);
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">localtimestamp</code>
+         → <code class="returnvalue">2019-12-23 14:39:53.662522</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="function">localtimestamp</code> ( <code class="type">integer</code> )
+         → <code class="returnvalue">timestamp</code>
+        </p>
+        <p>
+         Data e hora correntes (início da transação corrente),
+         com precisão limitada;
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">localtimestamp(2)</code>
+         → <code class="returnvalue">2019-12-23 14:39:53.66</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.27.1.1.1" class="indexterm"></a>
+         <code class="function">make_date</code> ( <em class="parameter"><code>ano</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>mês</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>dia</code></em> <code class="type">int</code> )
+         → <code class="returnvalue">date</code>
+        </p>
+        <p>
+         Cria data a partir dos campos de ano, mês e dia
+         (anos negativos significam BC)
+        </p>
+        <p>
+         <code class="literal">make_date(2013, 7, 15)</code>
+         → <code class="returnvalue">2013-07-15</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature"><a id="id-1.5.8.16.6.2.2.28.1.1.1" class="indexterm"></a>
+         <code class="function">make_interval</code> ( [<span class="optional"> <em class="parameter"><code>years</code></em> <code class="type">int</code>
+         [<span class="optional">, <em class="parameter"><code>months</code></em> <code class="type">int</code>
+         [<span class="optional">, <em class="parameter"><code>weeks</code></em> <code class="type">int</code>
+         [<span class="optional">, <em class="parameter"><code>days</code></em> <code class="type">int</code>
+         [<span class="optional">, <em class="parameter"><code>hours</code></em> <code class="type">int</code>
+         [<span class="optional">, <em class="parameter"><code>mins</code></em> <code class="type">int</code>
+         [<span class="optional">, <em class="parameter"><code>secs</code></em> <code class="type">double precision</code>
+         </span>]</span>]</span>]</span>]</span>]</span>]</span>] )
+         → <code class="returnvalue">interval</code>
+        </p>
+        <p>
+         Cria intervalo a partir dos argumentos
+         <em class="parameter"><code>years</code></em>,
+         <em class="parameter"><code>months</code></em>,
+         <em class="parameter"><code>weeks</code></em>,
+         <em class="parameter"><code>days</code></em>,
+         <em class="parameter"><code>hours</code></em>,
+         <em class="parameter"><code>mins</code></em> e
+         <em class="parameter"><code>secs</code></em>,
+         cada um deles tendo zero como valor padrão
+        </p>
+        <p>
+         <code class="literal">make_interval(days =&gt; 10)</code>
+         → <code class="returnvalue">10 days</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.29.1.1.1" class="indexterm"></a>
+         <code class="function">make_time</code> ( <em class="parameter"><code>hora</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>minuto</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>segundo</code></em> <code class="type">double precision</code> )
+         → <code class="returnvalue">time</code>
+        </p>
+        <p>
+         Cria hora a partir dos campos hora, minuto e segundos
+        </p>
+        <p>
+         <code class="literal">make_time(8, 15, 23.5)</code>
+         → <code class="returnvalue">08:15:23.5</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.30.1.1.1" class="indexterm"></a>
+         <code class="function">make_timestamp</code> ( <em class="parameter"><code>ano</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>mês</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>dia</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>hora</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>minuto</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>segundos</code></em> <code class="type">double precision</code> )
+         → <code class="returnvalue">timestamp</code>
+        </p>
+        <p>
+         Cria carimbo de data e hora a partir dos campos ano, mês, dia,
+         hora, minuto e segundos (anos negativos significam BC)
+        </p>
+        <p>
+         <code class="literal">make_timestamp(2013, 7, 15, 8, 15, 23.5)</code>
+         → <code class="returnvalue">2013-07-15 08:15:23.5</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.31.1.1.1" class="indexterm"></a>
+         <code class="function">make_timestamptz</code> ( <em class="parameter"><code>ano</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>mês</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>dia</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>hora</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>minuto</code></em> <code class="type">int</code>,
+         <em class="parameter"><code>segundos</code></em> <code class="type">double precision</code>
+         [<span class="optional">, <em class="parameter"><code>zona_horária</code></em> <code class="type">text</code> </span>] )
+         → <code class="returnvalue">timestamp with time zone</code>
+        </p>
+        <p>
+         Cria carimbo de data e hora com zona horária, a partir dos
+         campos ano, mês, dia, hora, minuto, segundos e zona horária
+         (anos negativos significam BC).
+         Se <em class="parameter"><code>timezone</code></em> não for especificado, a zona
+         horária corrente é usada; os exemplos assumem que a sessão está
+         na zona horária <code class="literal">Europe/London</code>
+        </p>
+        <p>
+         <code class="literal">make_timestamptz(2013, 7, 15, 8, 15, 23.5)</code>
+         → <code class="returnvalue">2013-07-15 08:15:23.5+01</code>
+        </p>
+        <p>
+         <code class="literal">make_timestamptz(2013, 7, 15, 8, 15, 23.5, 'America/New_York')</code>
+         → <code class="returnvalue">2013-07-15 13:15:23.5+01</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.32.1.1.1" class="indexterm"></a>
+         <code class="function">now</code> ( )
+         → <code class="returnvalue">timestamp with time zone</code>
+        </p>
+        <p>
+         Data e hora correntes (início da transação corrente);
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">now()</code>
+         → <code class="returnvalue">2019-12-23 14:39:53.662522-05</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.33.1.1.1" class="indexterm"></a>
+         <code class="function">statement_timestamp</code> ( )
+         → <code class="returnvalue">timestamp with time zone</code>
+        </p>
+        <p>
+         Data e hora correntes (início da instrução corrente);
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">statement_timestamp()</code>
+         → <code class="returnvalue">2019-12-23 14:39:53.662522-05</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.34.1.1.1" class="indexterm"></a>
+         <code class="function">timeofday</code> ( )
+         → <code class="returnvalue">text</code>
+        </p>
+        <p>
+         Data e hora corrente (como a função
+         <code class="function">clock_timestamp</code>, mas retorna uma cadeia de
+         caracteres do tipo de dados <code class="type">text</code>);
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">timeofday()</code>
+         → <code class="returnvalue">Mon Dec 23 14:39:53.662522 2019 EST</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.35.1.1.1" class="indexterm"></a>
+         <code class="function">transaction_timestamp</code> ( )
+         → <code class="returnvalue">timestamp with time zone</code>
+        </p>
+        <p>
+         Data e hora correntes (início da transação corrente);
+         veja <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT" title="9.9.5. Data e hora corrente">Data e hora corrente</a>
+        </p>
+        <p>
+         <code class="literal">transaction_timestamp()</code>
+         → <code class="returnvalue">2019-12-23 14:39:53.662522-05</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <a id="id-1.5.8.16.6.2.2.36.1.1.1" class="indexterm"></a>
+         <code class="function">to_timestamp</code> ( <code class="type">double precision</code> )
+         → <code class="returnvalue">timestamp with time zone</code>
+        </p>
+        <p>
+         Converte a época do Unix (segundos desde 1970-01-01 00:00:00+00)
+         para um carimbo de data e hora com zona horária
+        </p>
+        <p>
+         <code class="literal">to_timestamp(1284352323)</code>
+         → <code class="returnvalue">2010-09-13 04:32:03+00</code>
+        </p></td></tr></tbody></table></div></div><br class="table-break"><p>
+    <a id="id-1.5.8.16.7.1" class="indexterm"></a>
+    Além dessas funções, tem suporte o operador <code class="literal">OVERLAPS</code>
+    do <acronym class="acronym">SQL</acronym>:
+</p><pre class="synopsis">(<em class="replaceable"><code>start1</code></em>, <em class="replaceable"><code>end1</code></em>) OVERLAPS (<em class="replaceable"><code>start2</code></em>, <em class="replaceable"><code>end2</code></em>)
+(<em class="replaceable"><code>start1</code></em>, <em class="replaceable"><code>length1</code></em>) OVERLAPS (<em class="replaceable"><code>start2</code></em>, <em class="replaceable"><code>length2</code></em>)
+</pre><p>
+    Essa expressão retorna verdade quando dois períodos de tempo
+    (definidos por suas extremidades) se sobrepõem, e falso quando
+    não se sobrepõem.
+    Os pontos das extremidades podem ser especificados como um par de
+    datas, horas ou datas e horas; ou como uma data, hora ou
+    data e hora seguida por um intervalo.
+    Quando é fornecido um par de valores, pode ser escrito primeiro o
+    início ou o fim do período; <code class="literal">OVERLAPS</code> toma
+    automaticamente o valor mais antigo do par como o início do período.
+    Cada período de tempo é considerado representando o intervalo
+    semiaberto <em class="replaceable"><code>início</code></em> <code class="literal">&lt;=</code>
+    <em class="replaceable"><code>hora</code></em> <code class="literal">&lt;</code> <em class="replaceable"><code>fim</code></em>,
+    a menos que <em class="replaceable"><code>início</code></em> e <em class="replaceable"><code>fim</code></em>
+    sejam iguais, caso onde representam um determinado instante de tempo.
+    Isso significa, por exemplo, que dois períodos de tempo, com apenas
+    um ponto de extremidade em comum não se sobrepõem.
+   </p><pre class="screen">SELECT (DATE '2001-02-16', DATE '2001-12-21') OVERLAPS
+       (DATE '2001-10-30', DATE '2002-10-30');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">true</code>
+SELECT (DATE '2001-02-16', INTERVAL '100 days') OVERLAPS
+       (DATE '2001-10-30', DATE '2002-10-30');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">false</code>
+SELECT (DATE '2001-10-29', DATE '2001-10-30') OVERLAPS
+       (DATE '2001-10-30', DATE '2001-10-31');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">false</code>
+SELECT (DATE '2001-10-30', DATE '2001-10-30') OVERLAPS
+       (DATE '2001-10-30', DATE '2001-10-31');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">true</code>
+</pre><p>
+   Ao se adicionar, ou subtrair, um valor do tipo de dados
+   <code class="type">interval</code> de um valor do tipo de dados
+   <code class="type">timestamp with time zone</code>, o componente dos dias adianta,
+   ou atrasa, a data do valor do tipo de dados
+   <code class="type">timestamp with time zone</code> pelo número de dias indicado,
+   mantendo a hora do dia.
+   Durante as alterações do horário de verão (quando a zona horária da
+   sessão é definida como uma zona horária que reconhece horário de verão),
+   isto significa que <code class="literal">interval '1 day'</code>
+   não é necessariamente igual a <code class="literal">interval '24 hours'</code>.
+   Por exemplo, com a zona horária da sessão definida como
+   <code class="literal">America/Denver</code>:
+</p><pre class="screen">SELECT timestamp with time zone '2005-04-02 12:00:00-07' + interval '1 day';
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2005-04-03 12:00:00-06</code>
+SELECT timestamp with time zone '2005-04-02 12:00:00-07' + interval '24 hours';
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2005-04-03 13:00:00-06</code>
+</pre><p>
+   Isso acontece, porque foi saltada uma hora devido a mudança no
+   horário de verão em <code class="literal">2005-04-03 02:00:00</code> na zona
+   horária <code class="literal">America/Denver</code>.
+  </p><p>
+   Note que pode haver ambiguidade no campo <code class="literal">months</code>
+   retornado pela função <code class="function">age</code>, porque meses
+   diferentes têm números de dias diferentes.
+   A abordagem do <span class="productname">PostgreSQL</span> usa o mês da
+   primeira das duas datas ao calcular os meses parciais.
+   Por exemplo, <code class="literal">age('2004-06-01', '2004-04-30')</code> usa
+   Abril para produzir <code class="literal">1 mon 1 day</code>, enquanto que
+   usando Maio produziria <code class="literal">1 mon 2 days</code>, porque Maio
+   tem 31 dias, enquanto Abril tem apenas 30.
+  </p><p>
+   A subtração de datas e carimbos de data e hora também pode ser complexa.
+   Uma maneira conceitualmente simples de realizar a subtração seria
+   converter cada valor em número de segundos usando
+   <code class="literal">EXTRACT(EPOCH FROM ...)</code> e, em seguida, subtrair os
+   resultados produzindo o número de <span class="emphasis"><em>segundos</em></span>
+   entre os dois valores.
+   Com isso seria ajustado o número de dias de cada mês, as alterações
+   de zona horária e os ajustes do horário de verão.
+   A subtração de valores de data ou de carimbo de data e hora usando o
+   operador <span class="quote">“<span class="quote"><code class="literal">-</code></span>”</span> retorna o número de dias
+   (24 horas) e horas/minutos/segundos entre os valores, fazendo os
+   mesmos ajustes.
+   A função <code class="function">age</code> retorna anos, meses, dias e
+   horas/minutos/segundos, realizando a subtração campo a campo e,
+   em seguida, ajustando para os valores de campo negativos.
+   As consultas a seguir mostram as diferenças dessas abordagens.
+   Os resultados da amostra foram produzidos usando <code class="literal">timezone
+   = 'US/Eastern'</code>; há uma mudança de horário de verão entre
+   as duas datas usadas:
+  </p><pre class="screen">SELECT EXTRACT(EPOCH FROM timestamptz '2013-07-01 12:00:00') -
+       EXTRACT(EPOCH FROM timestamptz '2013-03-01 12:00:00');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">10537200</code>
+SELECT (EXTRACT(EPOCH FROM timestamptz '2013-07-01 12:00:00') -
+        EXTRACT(EPOCH FROM timestamptz '2013-03-01 12:00:00'))
+        / 60 / 60 / 24;
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">121.958333333333</code>
+SELECT timestamptz '2013-07-01 12:00:00' - timestamptz '2013-03-01 12:00:00';
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">121 days 23:00:00</code>
+SELECT age(timestamptz '2013-07-01 12:00:00', timestamptz '2013-03-01 12:00:00');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">4 mons</code>
+</pre><div class="sect2" id="FUNCTIONS-DATETIME-EXTRACT"><div class="titlepage"><div><div><h3 class="title">9.9.1. EXTRACT, date_part</h3></div></div></div><a id="id-1.5.8.16.13.2" class="indexterm"></a><a id="id-1.5.8.16.13.3" class="indexterm"></a><pre class="synopsis">EXTRACT(<em class="replaceable"><code>campo</code></em> FROM <em class="replaceable"><code>origem</code></em>)
+</pre><p>
+    A função <code class="function">extract</code> extrai subcampos, como ano ou
+    hora, dos valores de data e hora.
+    A <em class="replaceable"><code>origem</code></em> deve ser uma expressão de valor
+    do tipo de dados <code class="type">timestamp</code>, <code class="type">time</code> ou
+    <code class="type">interval</code>.
+    (As expressões do tipo de dados <code class="type">date</code> são convertidas em
+    <code class="type">timestamp</code>, portanto também podem ser utilizadas.)
+    O <em class="replaceable"><code>campo</code></em> é um identificador, ou cadeia de
+    caracteres, que seleciona qual campo deve ser extraído do valor de origem.
+    A função <code class="function">extract</code> retorna um valor do tipo de dados
+    <code class="type">numeric</code>. São válidos os seguintes nomes de campo:
+
+
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="literal">century</code></span></dt><dd><p>
+        O século
+       </p><pre class="screen">SELECT EXTRACT(CENTURY FROM TIMESTAMP '2000-12-16 12:21:13');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">20</code>
+SELECT EXTRACT(CENTURY FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">21</code>
+</pre><p>
+        O século primeiro começou em <code class="literal">0001-01-01 00:00:00 AD</code>,
+        embora ninguém soubesse disso naquela época.
+        Essa definição se aplica a todos os países que usam o calendário
+        gregoriano.
+        Não existe o século de número 0, o calendário vai do século -1
+        para o século 1 diretamente. Se não concordar com isso,
+        por favor, escreva sua reclamação para:
+        <span class="quote">“<span class="quote">"Sua Santitá Francesco, 00120 Città del Vaticano".</span>”</span>
+       </p></dd><dt><span class="term"><code class="literal">day</code></span></dt><dd><p>
+        Para os valores do tipo de dados <code class="type">timestamp</code>,
+        é o campo dia (do mês) (1–31);  para os valores do
+        tipo de dados <code class="type">interval</code>, é o número de dias
+       </p><pre class="screen">SELECT EXTRACT(DAY FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">16</code>
+
+SELECT EXTRACT(DAY FROM INTERVAL '40 days 1 minute');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">40</code>
+</pre></dd><dt><span class="term"><code class="literal">decade</code></span></dt><dd><p>
+        O campo ano dividido por <code class="literal">10</code>
+       </p><pre class="screen">SELECT EXTRACT(DECADE FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">200</code>
+</pre></dd><dt><span class="term"><code class="literal">dow</code></span></dt><dd><p>
+        O dia da semana, de Domingo (<code class="literal">0</code>) a
+        Sábado (<code class="literal">6</code>)
+       </p><pre class="screen">SELECT EXTRACT(DOW FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">5</code>
+SELECT TO_CHAR(TIMESTAMP '2001-02-16 20:38:40', 'D');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">6</code>
+</pre><p>
+        Note que a numeração do dia da semana da função
+        <code class="function">extract</code> é diferente da função
+        <code class="function">to_char(..., 'D')</code>.
+       </p></dd><dt><span class="term"><code class="literal">doy</code></span></dt><dd><p>
+        O dia do ano (1–365/366)
+       </p><pre class="screen">SELECT EXTRACT(DOY FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">47</code>
+SELECT TO_CHAR(TIMESTAMP '2001-02-16 20:38:40', 'DDD');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">047</code>
+</pre></dd><dt><span class="term"><code class="literal">epoch</code></span></dt><dd><p>
+        Para os valores do tipo de dados <code class="type">timestamp with time zone</code>,
+        é o número de segundos desde <code class="literal">1970-01-01 00:00:00 UTC</code>
+        (negativo para carimbos de data e hora anteriores a esta data);
+        para os valores dos tipos de dados <code class="type">date</code> e
+        <code class="type">timestamp</code>, é o número de segundos nominal
+        (não ajustado) desde <code class="literal">1970-01-01 00:00:00</code>,
+        independentemente da zona horária, ou das regras de horário de verão;
+        para os valores do tipo de dados <code class="type">interval</code>,
+        é o número total de segundos no intervalo
+       </p><pre class="screen">SELECT EXTRACT(EPOCH FROM TIMESTAMP WITH TIME ZONE '2001-02-16 20:38:40.12-08');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">982384720.12</code>
+
+SELECT EXTRACT(EPOCH FROM TIMESTAMP '2001-02-16 20:38:40.12');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">982355920.12</code>
+
+SELECT EXTRACT(EPOCH FROM INTERVAL '5 days 3 hours');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">442800</code>
+</pre><p>
+        Pode ser convertido um valor de época de volta para
+        <code class="type">timestamp with time zone</code> usando a função
+        <code class="function">to_timestamp</code>:
+       </p><pre class="screen">SELECT to_timestamp(982384720.12);
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2001-02-17 04:38:40.12+00</code>
+</pre><p>
+        Esteja ciente que aplicar a função
+        <code class="function">to_timestamp</code> a uma época extraída de um
+        valor do tipo de dados <code class="type">date</code> ou <code class="type">timestamp</code>,
+        pode produzir um resultado enganoso: o resultado vai assumir que
+        o valor original foi fornecido em UTC, podendo não ser o caso.
+       </p></dd><dt><span class="term"><code class="literal">hour</code></span></dt><dd><p>
+        O campo hora (0–23)
+       </p><pre class="screen">SELECT EXTRACT(HOUR FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">20</code>
+</pre></dd><dt><span class="term"><code class="literal">isodow</code></span></dt><dd><p>
+        O dia da semana, de Segunda-feira (<code class="literal">1</code>) a
+        Domingo (<code class="literal">7</code>)
+       </p><pre class="screen">SELECT EXTRACT(ISODOW FROM TIMESTAMP '2001-02-18 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">7</code>
+</pre><p>
+        É idêntico a <code class="literal">dow</code>, exceto para o Domingo.
+        Corresponde à numeração do dia da semana da data com número da
+        semana <acronym class="acronym">ISO</acronym> 8601.
+       </p></dd><dt><span class="term"><code class="literal">isoyear</code></span></dt><dd><p>
+        O ano no qual a data cai, na data com número da semana
+        <acronym class="acronym">ISO</acronym> 8601
+        (não aplicável a intervalos)
+       </p><pre class="screen">SELECT EXTRACT(ISOYEAR FROM DATE '2006-01-01');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2005</code>
+SELECT EXTRACT(ISOYEAR FROM DATE '2006-01-02');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2006</code>
+</pre><p>
+        A numeração da semana, da data com número da semana
+        <acronym class="acronym">ISO</acronym> 8601, começa na segunda-feira
+        da semana contendo o dia 4 de janeiro. Portanto, no
+        início de janeiro, e no final de dezembro, o ano
+        <acronym class="acronym">ISO</acronym> pode ser diferente do ano gregoriano.
+        Veja o campo <code class="literal">week</code> para obter mais informações.
+       </p><p>
+        Esse campo não está disponível nas versões do
+        <span class="productname">PostgreSQL</span> anteriores a 8.3.
+       </p></dd><dt><span class="term"><code class="literal">julian</code></span></dt><dd><p>
+        A <em class="firstterm">Data Juliana</em> correspondente à data ou
+        carimbo de data e hora (não aplicável a intervalos).
+        Os carimbos de data e hora que não estão à meia-noite local
+        resultam em um valor fracionário. Veja
+        <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/datetime-julian-dates.html" title="B.7. Datas Julianas">Datas Julianas</a> para obter mais informações.
+       </p><pre class="screen">SELECT EXTRACT(JULIAN FROM DATE '2006-01-01');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2453737</code>
+SELECT EXTRACT(JULIAN FROM TIMESTAMP '2006-01-01 12:00');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2453737.50000000000000000000</code>
+</pre></dd><dt><span class="term"><code class="literal">microseconds</code></span></dt><dd><p>
+        O campo segundos, incluindo as partes fracionárias,
+        multiplicado por <code class="literal">1 000 000</code>;
+        observe que estão incluídos os segundos completos
+       </p><pre class="screen">SELECT EXTRACT(MICROSECONDS FROM TIME '17:12:28.5');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">28500000</code>
+</pre></dd><dt><span class="term"><code class="literal">millennium</code></span></dt><dd><p>
+        O milênio
+       </p><pre class="screen">SELECT EXTRACT(MILLENNIUM FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">3</code>
+SELECT EXTRACT(MILLENNIUM FROM TIMESTAMP '1900-01-01 00:00:00 UTC');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2</code>
+SELECT EXTRACT(MILLENNIUM FROM TIMESTAMP '1999-12-31 23:59:59 UTC');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2</code>
+SELECT EXTRACT(MILLENNIUM FROM TIMESTAMP '2000-12-31 23:59:59 UTC');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2</code>
+SELECT EXTRACT(MILLENNIUM FROM TIMESTAMP '1000-12-31 23:59:59 UTC');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">1</code>
+</pre><p>
+        Os anos de 1900 estão no segundo milênio.
+        O terceiro milênio começou em 1º de janeiro de 2001.
+       </p></dd><dt><span class="term"><code class="literal">milliseconds</code></span></dt><dd><p>
+        O campo dos segundos, incluindo as partes fracionárias,
+        multiplicado por <code class="literal">1.000</code>.
+        observe que estão incluídos os segundos completos
+       </p><pre class="screen">SELECT EXTRACT(MILLISECONDS FROM TIME '17:12:28.5');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">28500</code>
+</pre></dd><dt><span class="term"><code class="literal">minute</code></span></dt><dd><p>
+        O campo minutos (0–59)
+       </p><pre class="screen">SELECT EXTRACT(MINUTE FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">38</code>
+</pre></dd><dt><span class="term"><code class="literal">month</code></span></dt><dd><p>
+        Para os valores do tipo de dados <code class="type">timestamp</code>,
+        é o número do mês dentro do ano (1–12) ; para os valores
+        do tipo de dados <code class="type">interval</code>, é o número de meses,
+        módulo 12 (0–11)
+       </p><pre class="screen">SELECT EXTRACT(MONTH FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2</code>
+
+SELECT EXTRACT(MONTH FROM INTERVAL '2 years 3 months');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">3</code>
+
+SELECT EXTRACT(MONTH FROM INTERVAL '2 years 13 months');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">1</code>
+</pre></dd><dt><span class="term"><code class="literal">quarter</code></span></dt><dd><p>
+        O trimestre do ano no qual a data se encontra (1–4)
+       </p><pre class="screen">SELECT EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">1</code>
+</pre></dd><dt><span class="term"><code class="literal">second</code></span></dt><dd><p>
+        O campo segundos, incluindo quaisquer segundos fracionários
+       </p><pre class="screen">SELECT EXTRACT(SECOND FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">40</code>
+
+SELECT EXTRACT(SECOND FROM TIME '17:12:28.5');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">28.5</code>
+</pre></dd><dt><span class="term"><code class="literal">timezone</code></span></dt><dd><p>
+        O deslocamento da zona horária do UTC, medido em segundos.
+        Valores positivos correspondem a zonas horárias a leste do UTC,
+        valores negativos a zonas a oeste do UTC.
+        (Tecnicamente, o <span class="productname">PostgreSQL</span> não usa
+        UTC, porque não são tratados os
+        <a class="ulink" href="https://pt.wikipedia.org/wiki/Segundo_intercalar" target="_top">segundos bissextos</a>.)
+       </p></dd><dt><span class="term"><code class="literal">timezone_hour</code></span></dt><dd><p>
+        O componente hora do deslocamento de zona horária
+       </p></dd><dt><span class="term"><code class="literal">timezone_minute</code></span></dt><dd><p>
+        O componente minuto do deslocamento de zona horária
+       </p></dd><dt><span class="term"><code class="literal">week</code></span></dt><dd><p>
+        O número da semana, na data com número da semana
+        <acronym class="acronym">ISO</acronym> 8601.
+        Por definição, as semanas <acronym class="acronym">ISO</acronym> começam às
+        segundas-feiras, e a primeira semana do ano inclui 4 de janeiro
+        deste ano.
+        Em outras palavras, a primeira quinta-feira do ano está na
+        semana 1 deste ano.
+       </p><p>
+        No sistema de numeração de semanas <acronym class="acronym">ISO</acronym>,
+        é possível que as datas do início de janeiro façam parte da
+        52ª ou 53ª semana do ano anterior, e que as datas do final de
+        dezembro façam parte da primeira semana do ano seguinte.
+        Por exemplo, <code class="literal">2005-01-01</code> está na 53ª semana
+        do ano de 2004, e <code class="literal">2006-01-01</code> está na 52ª
+        semana do ano de 2005, enquanto <code class="literal">2012-12-31</code>
+        está na primeira semana de 2013.
+        É recomendado usar o campo <code class="literal">isoyear</code> junto com
+        <code class="literal">week</code> para obter resultados consistentes.
+        <a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#ftn.id-1.5.8.16.13.5.11.21.2.2.7" class="footnote"><sup class="footnote" id="id-1.5.8.16.13.5.11.21.2.2.7">[73]</sup></a>
+       </p><pre class="screen">SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">7</code>
+SELECT EXTRACT(WEEK FROM DATE '2018-12-30');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">52</code>
+print(Week.fromdate(date(2018, 12, 30), system="iso")) # Python
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2018W52</code>
+print(Week.fromdate(date(2018, 12, 30), system="cdc")) # Python
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">201901</code>
+</pre></dd><dt><span class="term"><code class="literal">year</code></span></dt><dd><p>
+        O campo ano. Tenha em mente que <code class="literal">0 AD</code> não
+        existe. Portanto, subtrair anos <code class="literal">BC</code> de anos
+        <code class="literal">AD</code> deve ser feito com cuidado.
+       </p><pre class="screen">SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2001</code>
+</pre></dd></dl></div><p>
+   </p><div class="note"><h3 class="title">Nota</h3><p>
+     Quando o valor da entrada é <code class="literal">+/-Infinity</code>, a função
+     <code class="function">extract</code> retorna <code class="literal">+/-Infinity</code>
+     para campos monotonicamente crescentes (<code class="literal">epoch</code>,
+     <code class="literal">julian</code>, <code class="literal">year</code>,
+     <code class="literal">isoyear</code>, <code class="literal">decade</code>,
+     <code class="literal">century</code> e <code class="literal">millennium</code>).
+     Para os outros campos, é retornado o valor nulo.
+     As versões do <span class="productname">PostgreSQL</span> anteriores a
+     9.6 retornavam zero para todos os casos de entrada infinita.
+    </p></div><p>
+    A função <code class="function">extract</code> destina-se principalmente ao
+    processamento computacional.
+    Para formatar valores de data e hora para exibição, veja
+    <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-formatting.html" title="9.8. Funções de formatação de tipo de dados">Funções de formatação de tipo de dados</a>.
+   </p><p>
+    A função <code class="function">date_part</code> é modelada no equivalente
+    tradicional do <span class="productname">Ingres</span> para a função
+    <code class="function">extract</code> do padrão <acronym class="acronym">SQL</acronym>:
+</p><pre class="synopsis">date_part('<em class="replaceable"><code>campo</code></em>', <em class="replaceable"><code>origem</code></em>)
+</pre><p>
+    Note que aqui o parâmetro <em class="replaceable"><code>campo</code></em>
+    precisa ser um valor cadeia de caracteres, e não um nome.
+    Os nomes de campo válidos para a função <code class="function">date_part</code>
+    são os mesmos para a função <code class="function">extract</code>.
+    Por razões históricas, a função <code class="function">date_part</code>
+    retorna valores do tipo de dados <code class="type">double precision</code>,
+    o que pode resultar em uma perda de precisão em certos casos.
+    Por isso, recomenda-se usar a função <code class="function">extract</code>
+    em vez da função <code class="function">date_part</code>.
+   </p><pre class="screen">SELECT date_part('day', TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">16</code>
+
+SELECT date_part('hour', INTERVAL '4 hours 3 minutes');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">4</code>
+</pre></div><div class="sect2" id="FUNCTIONS-DATETIME-TRUNC"><div class="titlepage"><div><div><h3 class="title">9.9.2. Função date_trunc</h3></div></div></div><a id="id-1.5.8.16.14.2" class="indexterm"></a><p>
+    A função <code class="function">date_trunc</code> é conceitualmente semelhante
+    à função para números <code class="function">trunc</code>.
+   </p><p>
+</p><pre class="synopsis">date_trunc(<em class="replaceable"><code>campo</code></em>, <em class="replaceable"><code>origem</code></em> [, <em class="replaceable"><code>time_zone</code></em> ])
+</pre><p>
+    A <em class="replaceable"><code>origem</code></em> é uma expressão de valor do tipo
+    de dados <code class="type">timestamp</code>, <code class="type">timestamp with time zone</code>
+    ou <code class="type">interval</code>.
+    (Os valores dos tipos de dados <code class="type">date</code> e <code class="type">time</code>
+    são convertidos, automaticamente, para os tipos de dados
+    <code class="type">timestamp</code> e <code class="type">interval</code>, respectivamente.)
+    O <em class="replaceable"><code>campo</code></em> seleciona para qual precisão o
+    valor da entrada deve ser truncado.
+    O valor retornado também é do tipo de dados
+    <code class="type">timestamp</code>, <code class="type">timestamp with time zone</code>,
+    ou <code class="type">interval</code>, como na entrada, com todos os campos
+    menos significativos que o campo selecionado definidos como zero
+    (ou um, para dia e mês).
+   </p><p>
+    Os valores válidos para <em class="replaceable"><code>campo</code></em> são:
+    </p><table border="0" summary="Simple list" class="simplelist"><tbody><tr><td><code class="literal">microseconds</code></td></tr><tr><td><code class="literal">milliseconds</code></td></tr><tr><td><code class="literal">second</code></td></tr><tr><td><code class="literal">minute</code></td></tr><tr><td><code class="literal">hour</code></td></tr><tr><td><code class="literal">day</code></td></tr><tr><td><code class="literal">week</code></td></tr><tr><td><code class="literal">month</code></td></tr><tr><td><code class="literal">quarter</code></td></tr><tr><td><code class="literal">year</code></td></tr><tr><td><code class="literal">decade</code></td></tr><tr><td><code class="literal">century</code></td></tr><tr><td><code class="literal">millennium</code></td></tr></tbody></table><p>
+   </p><p>
+    Quando o valor da entrada é do tipo de dados
+    <code class="type">timestamp with time zone</code>,
+    o truncamento é realizado em relação à zona horária especificada;
+    por exemplo, o truncamento para <code class="literal">day</code> produz um
+    valor que é meia-noite nessa zona.
+    Por padrão, o truncamento é feito em relação à configuração corrente
+    de <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/runtime-config-client.html#GUC-TIMEZONE">TimeZone</a>, mas o argumento opcional
+    <em class="replaceable"><code>time_zone</code></em> pode ser fornecido para
+    especificar uma zona horária diferente.
+    O nome da zona horária pode ser especificado em qualquer uma das
+    formas descritas em <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/datatype-datetime.html#DATATYPE-TIMEZONES" title="8.5.3. Zonas horárias">Zonas horárias</a>.
+   </p><p>
+    Não pode ser especificada a zona horária ao se processar as
+    entradas dos tipos de dados <code class="type">timestamp without time zone</code>
+    ou <code class="type">interval</code>.
+    Estas entradas são sempre aceitas diretamente, sem interpretação.
+   </p><p>
+    Exemplos (assumindo que a zona horária local é
+    <code class="literal">America/New_York</code>):
+</p><pre class="screen">SELECT date_trunc('hour', TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2001-02-16 20:00:00</code>
+
+SELECT date_trunc('year', TIMESTAMP '2001-02-16 20:38:40');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2001-01-01 00:00:00</code>
+
+SELECT date_trunc('day', TIMESTAMP WITH TIME ZONE '2001-02-16 20:38:40+00');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2001-02-16 00:00:00-05</code>
+
+SELECT date_trunc('day', TIMESTAMP WITH TIME ZONE '2001-02-16 20:38:40+00', 'Australia/Sydney');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2001-02-16 08:00:00-05</code>
+
+SELECT date_trunc('hour', INTERVAL '3 days 02:47:33');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">3 days 02:00:00</code>
+</pre><p>
+   </p></div><div class="sect2" id="FUNCTIONS-DATETIME-BIN"><div class="titlepage"><div><div><h3 class="title">9.9.3. Função date_bin</h3></div></div></div><a id="id-1.5.8.16.15.2" class="indexterm"></a><p>
+    A função <code class="function">date_bin</code> <span class="quote">“<span class="quote">coloca</span>”</span> o
+    carimbo de data e hora da entrada no intervalo
+    (o <em class="firstterm">passo</em>) especificado alinhado com a origem
+    especificada.
+   </p><p>
+</p><pre class="synopsis">date_bin(<em class="replaceable"><code>passo</code></em>, <em class="replaceable"><code>fonte</code></em>, <em class="replaceable"><code>origem</code></em>)
+</pre><p>
+    A <em class="replaceable"><code>fonte</code></em> é uma expressão de valor do tipo
+    de dados <code class="type">timestamp</code> ou <code class="type">timestamp with time zone</code>.
+    (Os valores do tipo de dados <code class="type">date</code> são convertidos
+    automaticamente para o tipo de dados <code class="type">timestamp</code>.)
+    O <em class="replaceable"><code>passo</code></em> é uma expressão de valor do
+    tipo de dados <code class="type">interval</code>.
+    O valor retornado também é do tipo de dados <code class="type">timestamp</code>
+    ou <code class="type">timestamp with time zone</code>, conforme o tipo de dados
+    da fonte, e marca o início do intervalo no qual a
+    <em class="replaceable"><code>fonte</code></em> está colocada.
+   </p><p>
+    Exemplos:
+</p><pre class="screen">SELECT date_bin('15 minutes', TIMESTAMP '2020-02-11 15:44:17', TIMESTAMP '2001-01-01');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2020-02-11 15:30:00</code>
+
+SELECT date_bin('15 minutes', TIMESTAMP '2020-02-11 15:44:17', TIMESTAMP '2001-01-01 00:02:30');
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2020-02-11 15:32:30</code>
+</pre><p>
+   </p><p>
+    No caso de unidades inteiras (1 minuto, 1 hora, etc.), produz o mesmo
+    resultado que a chamada análoga à função <code class="function">date_trunc</code>,
+    mas a diferença é que a função <code class="function">date_bin</code> pode
+    truncar em um intervalo arbitrário.
+   </p><p>
+    O intervalo do <em class="parameter"><code>passo</code></em> deve ser maior que zero,
+    e não pode conter unidades de mês ou maiores.
+   </p></div><div class="sect2" id="FUNCTIONS-DATETIME-ZONECONVERT"><div class="titlepage"><div><div><h3 class="title">9.9.4. Operador AT TIME ZONE</h3></div></div></div><a id="id-1.5.8.16.16.2" class="indexterm"></a><a id="id-1.5.8.16.16.3" class="indexterm"></a><p>
+    O operador <code class="literal">AT TIME ZONE</code> converte carimbo de data
+    e hora <span class="emphasis"><em>sem</em></span> zona horária de/para carimbo de data
+    e hora <span class="emphasis"><em>com</em></span> zona horária, e o valores do tipo de
+    dados <code class="type">time with time zone</code> para uma zona horária diferente.
+    A <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#FUNCTIONS-DATETIME-ZONECONVERT-TABLE" title="Tabela 9.33. Formas alternativas de AT TIME ZONE">Tabela&nbsp;9.33</a> mostra as
+    suas formas alternativas.
+   </p><div class="table" id="FUNCTIONS-DATETIME-ZONECONVERT-TABLE"><p class="title"><strong>Tabela 9.33. Formas alternativas de AT TIME ZONE</strong></p><div class="table-contents"><table class="table" summary="Formas alternativas de AT TIME ZONE" border="1"><colgroup><col></colgroup><thead><tr><th class="func_table_entry"><p class="func_signature">
+         Operador
+        </p>
+        <p>
+         Descrição
+        </p>
+        <p>
+         Exemplo(s)
+        </p></th></tr></thead><tbody><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">timestamp without time zone</code> <code class="literal">AT TIME ZONE</code> <em class="replaceable"><code>zona</code></em>
+         → <code class="returnvalue">timestamp with time zone</code>
+        </p>
+        <p>
+         Converte a entrada de carimbo de tempo <span class="emphasis"><em>sem</em></span>
+         zona horária em carimbo de tempo <span class="emphasis"><em>com</em></span> zona
+         horária (UTC), assumindo que o valor fornecido está na zona
+         horária especificada.
+        </p>
+        <p>
+         <code class="literal">timestamp '2001-02-16 20:38:40' at time zone 'America/Denver'</code>
+         → <code class="returnvalue">2001-02-17 03:38:40+00</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">timestamp with time zone</code> <code class="literal">AT TIME ZONE</code> <em class="replaceable"><code>zona</code></em>
+         → <code class="returnvalue">timestamp without time zone</code>
+        </p>
+        <p>
+         Converte a entrada de carimbo de tempo <span class="emphasis"><em>com</em></span>
+         zona horária em carimbo de tempo <span class="emphasis"><em>sem</em></span>
+         zona horária, como a hora apareceria nessa zona.
+        </p>
+        <p>
+         <code class="literal">timestamp with time zone '2001-02-16 20:38:40-05' at time zone 'America/Denver'</code>
+         → <code class="returnvalue">2001-02-16 18:38:40</code>
+        </p></td></tr><tr><td class="func_table_entry"><p class="func_signature">
+         <code class="type">time with time zone</code> <code class="literal">AT TIME ZONE</code> <em class="replaceable"><code>zona</code></em>
+         → <code class="returnvalue">time with time zone</code>
+        </p>
+        <p>
+         Converte a hora <span class="emphasis"><em>com</em></span> zona horária da entrada
+         para uma nova zona horária. Como não é fornecida nenhuma data,
+         é usado o deslocamento UTC ativo nesse momento para a zona de
+         destino especificada.
+        </p>
+        <p>
+         <code class="literal">time with time zone '05:34:17-05' at time zone 'UTC'</code>
+         → <code class="returnvalue">10:34:17+00</code>
+        </p></td></tr></tbody></table></div></div><br class="table-break"><p>
+    Nessas expressões, a zona horária desejada (<em class="replaceable"><code>zona</code></em>)
+    pode ser especificada como um valor de texto
+    (por exemplo, <code class="literal">'America/Los_Angeles'</code>)
+    ou como um intervalo (por exemplo, <code class="literal">INTERVAL '-08:00'</code>).
+    No caso de texto, o nome da zona horária pode ser especificado em
+    qualquer uma das formas descritas em <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/datatype-datetime.html#DATATYPE-TIMEZONES" title="8.5.3. Zonas horárias">Zonas horárias</a>.
+    O caso de intervalo é útil apenas para zonas que possuem deslocamentos
+    fixos do UTC, portanto não é muito comum na prática.
+   </p><p>
+    Exemplos (assumindo que a definição corrente de
+    <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/runtime-config-client.html#GUC-TIMEZONE">TimeZone</a> é <code class="literal">America/Los_Angeles</code>):
+</p><pre class="screen">SELECT TIMESTAMP '2001-02-16 20:38:40' AT TIME ZONE 'America/Denver';
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2001-02-16 19:38:40-08</code>
+
+SELECT TIMESTAMP WITH TIME ZONE '2001-02-16 20:38:40-05' AT TIME ZONE 'America/Denver';
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2001-02-16 18:38:40</code>
+
+SELECT TIMESTAMP '2001-02-16 20:38:40' AT TIME ZONE 'Asia/Tokyo' AT TIME ZONE 'America/Chicago';
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2001-02-16 05:38:40</code>
+</pre><p>
+    O primeiro exemplo adiciona uma zona horária a um valor que não
+    possui zona horária e exibe o resultado usando a configuração
+    corrente de <code class="varname">TimeZone</code>.
+    O segundo exemplo muda o carimbo de data e hora com valor de zona
+    horária para a zona horária especificada, e retorna o valor sem
+    zona horária.
+    Isso permite o armazenamento e exibição de valores diferentes da
+    configuração corrente de <code class="varname">TimeZone</code>.
+    O terceiro exemplo converte a hora de Tóquio para a hora de Chicago.
+   </p><p>
+    A função <code class="literal"><code class="function">timezone</code>(<em class="replaceable"><code>zona</code></em>,
+    <em class="replaceable"><code>timestamp</code></em>)</code> equivale à
+    construção em conformidade com o padrão <acronym class="acronym">SQL</acronym>
+    <code class="literal"><em class="replaceable"><code>timestamp</code></em> AT TIME ZONE
+    <em class="replaceable"><code>zona</code></em></code>.
+   </p></div><div class="sect2" id="FUNCTIONS-DATETIME-CURRENT"><div class="titlepage"><div><div><h3 class="title">9.9.5. Data e hora corrente</h3></div></div></div><a id="id-1.5.8.16.17.2" class="indexterm"></a><a id="id-1.5.8.16.17.3" class="indexterm"></a><p>
+    O <span class="productname">PostgreSQL</span> fornece várias funções que
+    retornam valores relacionados à data e hora corrente.
+    Todas essas funções do padrão <code class="literal">SQL</code> retornam valores
+    com base na hora de início da transação corrente:
+</p><pre class="synopsis">CURRENT_DATE
+CURRENT_TIME
+CURRENT_TIMESTAMP
+CURRENT_TIME(<em class="replaceable"><code>precisão</code></em>)
+CURRENT_TIMESTAMP(<em class="replaceable"><code>precisão</code></em>)
+LOCALTIME
+LOCALTIMESTAMP
+LOCALTIME(<em class="replaceable"><code>precisão</code></em>)
+LOCALTIMESTAMP(<em class="replaceable"><code>precisão</code></em>)
+</pre><p>
+    </p><p>
+     <code class="function">CURRENT_TIME</code> e
+     <code class="function">CURRENT_TIMESTAMP</code>
+     retornam valores com zona horária;
+     <code class="function">LOCALTIME</code> e
+     <code class="function">LOCALTIMESTAMP</code>
+     retornam valores sem zona horária.
+    </p><p>
+     <code class="function">CURRENT_TIME</code>,
+     <code class="function">CURRENT_TIMESTAMP</code>,
+     <code class="function">LOCALTIME</code> e
+     <code class="function">LOCALTIMESTAMP</code>
+     podem receber, opcionalmente, um parâmetro de precisão, que faz
+     com que o resultado seja arredondado para esse número de dígitos
+     fracionários no campo de segundos.
+     Sem o parâmetro de precisão, o resultado é fornecido com a
+     precisão total disponível.
+    </p><p>
+    Alguns exemplos:
+</p><pre class="screen">SELECT CURRENT_TIME;
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">14:39:53.662522-05</code>
+
+SELECT CURRENT_DATE;
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2019-12-23</code>
+
+SELECT CURRENT_TIMESTAMP;
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2019-12-23 14:39:53.662522-05</code>
+
+SELECT CURRENT_TIMESTAMP(2);
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2019-12-23 14:39:53.66-05</code>
+
+SELECT LOCALTIMESTAMP;
+<em class="lineannotation"><span class="lineannotation">Resultado: </span></em><code class="computeroutput">2019-12-23 14:39:53.662522</code>
+</pre><p>
+   </p><p>
+    Como essas funções retornam a hora de início da transação corrente,
+    seus valores não mudam durante a transação.
+    Isso é considerado uma funcionalidade: a intenção é permitir que
+    cada transação tenha uma noção consistente da hora
+    <span class="quote">“<span class="quote">corrente</span>”</span>, de modo que várias modificações dentro da
+    mesma transação tenham o mesmo carimbo de data e hora.
+   </p><div class="note"><h3 class="title">Nota</h3><p>
+     Outros sistemas de banco de dados podem avançar esses valores com
+     mais frequência.
+    </p></div><p>
+    O <span class="productname">PostgreSQL</span> também fornece funções que
+    retornam a hora de início da instrução corrente, assim como a hora
+    corrente real no instante em que a função é chamada.
+    A lista completa das funções de tempo fora do padrão
+    <code class="literal">SQL</code> é:
+</p><pre class="synopsis">transaction_timestamp()
+statement_timestamp()
+clock_timestamp()
+timeofday()
+now()
+</pre><p>
+   </p><p>
+    A função <code class="function">transaction_timestamp()</code> equivale à
+    função <code class="function">CURRENT_TIMESTAMP</code>, mas recebeu este nome
+    para refletir claramente o que esta função retorna.
+    A função <code class="function">statement_timestamp()</code> retorna a hora
+    de início da instrução corrente (mais especificamente, a hora do
+    recebimento da última mensagem de comando do cliente).
+    A função <code class="function">statement_timestamp()</code> e a função
+    <code class="function">transaction_timestamp()</code>
+    retornam o mesmo valor durante o primeiro comando de uma transação,
+    mas podem diferir durante os comandos subsequentes.
+    A função <code class="function">clock_timestamp()</code> retorna a hora
+    corrente real, portanto seu valor muda mesmo no meio de um único
+    comando <acronym class="acronym">SQL</acronym>.
+    A função <code class="function">timeofday()</code> é uma função histórica do
+    <span class="productname">PostgreSQL</span>.
+    Como a função <code class="function">clock_timestamp()</code>, retorna a
+    hora corrente real, mas formatada como uma cadeia de caracteres
+    do tipo de dados <code class="type">text</code>, em vez de um valor
+    <code class="type">timestamp  with time zone</code>.
+    A função <code class="function">now()</code> é uma função tradicional do
+    <span class="productname">PostgreSQL</span> equivalente à função
+    <code class="function">transaction_timestamp()</code>.
+   </p><p>
+    Todos os tipos de dados de data e hora também aceitam o valor literal
+    especial <code class="literal">now</code> para especificar a data e hora corrente
+    (novamente, interpretado como a hora de início da transação).
+    Assim, os três comandos seguintes retornam o mesmo resultado:
+</p><pre class="programlisting">SELECT CURRENT_TIMESTAMP;
+SELECT now();
+SELECT TIMESTAMP 'now';  -- mas veja a dica abaixo
+</pre><p>
+   </p><div class="tip"><h3 class="title">Dica</h3><p>
+      Não use a terceira forma para especificar um valor a ser avaliado
+      mais tarde, por exemplo, em uma cláusula <code class="literal">DEFAULT</code>
+      para uma coluna da tabela.
+      O sistema converte <code class="literal">now</code> em <code class="type">timestamp</code>
+      assim que a constante é analisada, de modo que quando o valor padrão
+      for necessário, será usada a hora da criação da tabela!
+      As duas primeiras formas não são avaliadas até que o valor padrão
+      seja usado, porque são chamadas de função.
+      Assim, essas funções darão o comportamento desejado de usar como
+      padrão a hora de inserção da linha.
+      (Veja também <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/datatype-datetime.html#DATATYPE-DATETIME-SPECIAL-VALUES" title="8.5.1.4. Valores especiais">Valores especiais</a>.)
+     </p></div></div><div class="sect2" id="FUNCTIONS-DATETIME-DELAY"><div class="titlepage"><div><div><h3 class="title">9.9.6. Atrasando a execução</h3></div></div></div><a id="id-1.5.8.16.18.2" class="indexterm"></a><a id="id-1.5.8.16.18.3" class="indexterm"></a><a id="id-1.5.8.16.18.4" class="indexterm"></a><a id="id-1.5.8.16.18.5" class="indexterm"></a><a id="id-1.5.8.16.18.6" class="indexterm"></a><p>
+    Estão disponíveis as seguintes funções para atrasar a execução do
+    processo servidor:
+</p><pre class="synopsis">pg_sleep ( <code class="type">double precision</code> )
+pg_sleep_for ( <code class="type">interval</code> )
+pg_sleep_until ( <code class="type">timestamp with time zone</code> )
+</pre><p>
+
+    A função <code class="function">pg_sleep</code> faz com que o processo da
+    sessão corrente durma até que tenha decorrido o número de segundos
+    especificado.
+    Podem ser especificados atrasos de frações de segundos.
+    A função <code class="function">pg_sleep_for</code> é uma função de conveniência
+    para permitir que o tempo dormindo seja especificado como um
+    <code class="type">interval</code>.
+    A função <code class="function">pg_sleep_until</code> é uma função de conveniência
+    para quando se deseja uma hora específica para despertar.
+    Por exemplo:
+
+</p><pre class="programlisting">SELECT pg_sleep(1.5);
+SELECT pg_sleep_for('5 minutes');
+SELECT pg_sleep_until('tomorrow 03:00');
+</pre><p>
+   </p><div class="note"><h3 class="title">Nota</h3><p>
+      A resolução efetiva do intervalo de tempo a ser dormido é
+      específica da plataforma; 0,01 segundos é um valor comum.
+      O atraso dormindo será pelo menos tão longo quanto o valor
+      especificado.
+      Pode ser mais longo, dependendo de fatores como a carga do servidor.
+      Em particular, não não há garantia de que a função
+      <code class="function">pg_sleep_until</code> acorde exatamente na hora
+      especificada, porém não vai acordar antes.
+     </p></div><div class="warning"><h3 class="title">Atenção</h3><p>
+      Certifique-se de que a sessão não tenha mais bloqueios do que o
+      necessário ao chamar a função <code class="function">pg_sleep</code>,
+      ou uma de suas formas alternativas. Caso contrário, outras sessões
+      podem ter que esperar pelo seu processo que está dormindo,
+      diminuindo a velocidade de todo o sistema.
+     </p></div></div><div class="sect2" id="id-1.5.8.16.19"><div class="titlepage"><div><div><h3 class="title">9.9.7. Comparação entre SGBDs</h3></div></div></div><p>[<span class="citation">Seção escrita pelo tradutor, não fazendo parte da documentação original</span>]</p><p>
+     A <a class="xref" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#DATE-FUNC-PG-ORA-DB2-TABLE" title="Tabela 9.34. Comparação entre funções de data e hora">Tabela&nbsp;9.34</a> mostra uma
+     comparação entre funções de data e hora dos sistemas gerenciadores
+     de banco de dados <span class="productname">PostgreSQL</span>,
+     <span class="productname">Oracle</span> 21c e
+     <span class="productname">DB2</span> 11.5 da <acronym class="acronym">IBM</acronym>.
+    </p><p>
+     No <span class="productname">Oracle</span> a sessão foi configurada
+     usando as instruções
+     <code class="literal">ALTER SESSION SET TIME_ZONE = local;</code>,
+     <code class="literal">ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS';</code>,
+     <code class="literal">ALTER SESSION SET NLS_TIMESTAMP_FORMAT  = 'YYYY-MM-DD HH24:MI:SS.FF';</code> e
+     <code class="literal">ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT  = 'YYYY-MM-DD HH24:MI:SS.FF TZH:TZM';</code>
+    </p><p>Exemplos usados para fazer as comparações:
+    1) Intervalo de 4 dias, 5 horas e 12 minutos;
+    2) Intervalo de 20 dias menos intervalo de 10 dias;
+    3) Intervalo de 10 dias menos intervalo de 12 horas;
+    4) Carimbo de data e hora com zona horária;
+    5) Carimbo de data e hora formatado;
+    6) Carimbo de data e hora sem zona horária;
+    7) Data corrente;
+    8) Soma de 30 meses à data corrente;
+    9) Primeiro dia do trimestre;
+    10) Data arredondada ao nível de dia;
+    11) Primeiro dia do mês;
+    12) Último dia do mês;
+    13) Número do dia do mês;
+    14) Número do dia da semana (terça-feira);
+    15) Número de dias entre datas; e
+    16) Data truncada ao nível de hora.
+    </p><div class="table" id="DATE-FUNC-PG-ORA-DB2-TABLE"><p class="title"><strong>Tabela 9.34. Comparação entre funções de data e hora</strong></p><div class="table-contents"><table class="table" summary="Comparação entre funções de data e hora" border="1"><colgroup><col><col><col><col></colgroup><thead><tr><th>Nº</th><th>PostgreSQL</th><th>Oracle 21c</th><th>DB2 11.5</th></tr></thead><tbody><tr><td>1</td><td>
+<div class="literallayout"><p>INTERVAL&nbsp;'4&nbsp;DAYS&nbsp;5&nbsp;HOURS&nbsp;12&nbsp;MINUTES'<br>
+→&nbsp;<code class="returnvalue">4&nbsp;days&nbsp;05:12:00</code></p></div>
+        </td><td>
+<div class="literallayout"><p>INTERVAL&nbsp;'4&nbsp;5:12'&nbsp;DAY&nbsp;TO&nbsp;MINUTE<br>
+→&nbsp;<code class="returnvalue">+04&nbsp;05:12:00</code></p></div>
+        </td><td>
+<div class="literallayout"><p>INTERVAL&nbsp;'4&nbsp;DAYS&nbsp;5&nbsp;HOURS&nbsp;12&nbsp;MINUTES'<br>
+→&nbsp;<code class="returnvalue">4051200,</code></p></div>
+        </td></tr><tr><td>2</td><td>
+<div class="literallayout"><p>INTERVAL&nbsp;'20&nbsp;DAY'&nbsp;-<br>
+INTERVAL&nbsp;'10&nbsp;DAY'<br>
+→&nbsp;<code class="returnvalue">10&nbsp;days</code></p></div>
+        </td><td>
+<div class="literallayout"><p>INTERVAL'20'&nbsp;DAY&nbsp;-<br>
+INTERVAL'10'&nbsp;DAY<br>
+→&nbsp;<code class="returnvalue">+000000010&nbsp;00:00:00.000000000</code></p></div>
+        </td><td>
+<div class="literallayout"><p>INTERVAL&nbsp;'20&nbsp;DAY'&nbsp;-<br>
+INTERVAL&nbsp;'10&nbsp;DAY'<br>
+→&nbsp;<code class="returnvalue">10,</code></p></div>
+        </td></tr><tr><td>3</td><td>
+<div class="literallayout"><p>INTERVAL&nbsp;'10&nbsp;DAY'&nbsp;-<br>
+INTERVAL&nbsp;'12&nbsp;HOUR'<br>
+→&nbsp;<code class="returnvalue">10&nbsp;days&nbsp;-12:00:00</code></p></div>
+        </td><td>
+<div class="literallayout"><p>INTERVAL'10'&nbsp;DAY&nbsp;-<br>
+INTERVAL'12'&nbsp;HOUR<br>
+→&nbsp;<code class="returnvalue">+000000009&nbsp;12:00:00.000000000</code></p></div>
+        </td><td>
+<div class="literallayout"><p>INTERVAL&nbsp;'10&nbsp;DAY'&nbsp;-<br>
+INTERVAL&nbsp;'12&nbsp;HOUR'<br>
+→&nbsp;<code class="returnvalue">-119990,</code></p></div>
+        </td></tr><tr><td>4</td><td>
+<div class="literallayout"><p>CURRENT_TIMESTAMP<br>
+→&nbsp;<code class="returnvalue">2022-09-06&nbsp;16:22:20.651725-03</code></p></div>
+        </td><td>
+<div class="literallayout"><p>CURRENT_TIMESTAMP<br>
+→&nbsp;<code class="returnvalue">2022-09-06&nbsp;07:31:27.002041&nbsp;-03:00</code></p></div>
+        </td><td>
+<div class="literallayout"><p>CURRENT_TIMESTAMP<br>
+→&nbsp;<code class="returnvalue">2022-09-06-16.21.47.170790</code></p></div>
+        </td></tr><tr><td>5</td><td>
+<div class="literallayout"><p>TO_CHAR(CURRENT_TIMESTAMP,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'DD-MM-YYYY&nbsp;HH24:MI:SS')<br>
+→&nbsp;<code class="returnvalue">06-09-2022&nbsp;16:21:01</code></p></div>
+        </td><td>
+<div class="literallayout"><p>TO_CHAR(CURRENT_TIMESTAMP,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'DD-MM-YYYY&nbsp;HH24:MI:SS')<br>
+→&nbsp;<code class="returnvalue">06-09-2022&nbsp;16:25:33</code></p></div>
+        </td><td>
+<div class="literallayout"><p>TO_CHAR(CURRENT_TIMESTAMP,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'DD-MM-YYYY&nbsp;HH24:MI:SS')<br>
+→&nbsp;<code class="returnvalue">06-09-2022&nbsp;16:20:24&nbsp;</code></p></div>
+        </td></tr><tr><td>6</td><td>
+<div class="literallayout"><p>LOCALTIMESTAMP<br>
+→&nbsp;<code class="returnvalue">2022-09-06&nbsp;16:19:22.999856</code></p></div>
+        </td><td>
+<div class="literallayout"><p>LOCALTIMESTAMP<br>
+→&nbsp;<code class="returnvalue">2022-09-06&nbsp;08:22:50.581135</code></p></div>
+        </td><td>
+<div class="literallayout"><p>LOCALTIMESTAMP<br>
+→&nbsp;<code class="returnvalue">2022-09-06-16.18.42.030562</code></p></div>
+        </td></tr><tr><td>7</td><td>
+<div class="literallayout"><p>CURRENT_DATE<br>
+→&nbsp;<code class="returnvalue">2022-09-06</code></p></div>
+        </td><td>
+<div class="literallayout"><p>CURRENT_DATE<br>
+→&nbsp;<code class="returnvalue">2022-09-06</code></p></div>
+        </td><td>
+<div class="literallayout"><p>CURRENT_DATE<br>
+→&nbsp;<code class="returnvalue">06/09/2022</code></p></div>
+        </td></tr><tr><td>8</td><td>
+<div class="literallayout"><p>CURRENT_DATE&nbsp;+&nbsp;INTERVAL&nbsp;'30&nbsp;MONTHS'<br>
+→&nbsp;<code class="returnvalue">2025-03-06&nbsp;00:00:00</code></p></div>
+        </td><td>
+<div class="literallayout"><p>ADD_MONTHS(CURRENT_DATE,&nbsp;30)<br>
+→&nbsp;<code class="returnvalue">2025-03-06</code></p></div>
+        </td><td>
+<div class="literallayout"><p>ADD_MONTHS(CURRENT_DATE,&nbsp;30)<br>
+→&nbsp;<code class="returnvalue">06/03/2025</code></p></div>
+        </td></tr><tr><td>9</td><td>
+<div class="literallayout"><p>DATE_TRUNC('quarter',&nbsp;CURRENT_DATE)<br>
+→&nbsp;<code class="returnvalue">2022-07-01&nbsp;00:00:00-03</code></p></div>
+        </td><td>
+<div class="literallayout"><p>TRUNC(CURRENT_DATE,&nbsp;'Q')<br>
+→&nbsp;<code class="returnvalue">2022-07-01&nbsp;00:00:00</code></p></div>
+        </td><td>
+<div class="literallayout"><p>THIS_QUARTER(CURRENT_DATE)<br>
+→&nbsp;<code class="returnvalue">01/07/2022</code></p></div>
+        </td></tr><tr><td>10</td><td>
+<div class="literallayout"><p><br>
+DATE_TRUNC('day',&nbsp;CURRENT_TIMESTAMP&nbsp;+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INTERVAL&nbsp;'12&nbsp;HOURS')<br>
+→&nbsp;<code class="returnvalue">2022-09-07&nbsp;00:00:00-03</code></p></div>
+        </td><td>
+<div class="literallayout"><p>ROUND(CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">2022-09-07&nbsp;00:00:00</code></p></div>
+        </td><td>
+<div class="literallayout"><p>ROUND(CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">07/09/2022</code></p></div>
+        </td></tr><tr><td>11</td><td>
+<div class="literallayout"><p>DATE_TRUNC('month',&nbsp;CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">2022-09-01&nbsp;00:00:00-03</code></p></div>
+        </td><td>
+<div class="literallayout"><p>TRUNC(CURRENT_TIMESTAMP,&nbsp;'MONTH')<br>
+→&nbsp;<code class="returnvalue">2022-09-01&nbsp;00:00:00</code></p></div>
+        </td><td>
+<div class="literallayout"><p>THIS_MONTH(CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">01/09/2022</code></p></div>
+        </td></tr><tr><td>12</td><td>
+<div class="literallayout"><p>DATE_TRUNC('month',&nbsp;CURRENT_DATE)&nbsp;+<br>
+INTERVAL&nbsp;'1&nbsp;MONTH&nbsp;-&nbsp;1&nbsp;DAY'<br>
+→&nbsp;<code class="returnvalue">2022-09-30&nbsp;00:00:00-03</code></p></div>
+        </td><td>
+<div class="literallayout"><p>LAST_DAY(CURRENT_DATE)<br>
+→&nbsp;<code class="returnvalue">2022-09-30</code></p></div>
+        </td><td>
+<div class="literallayout"><p>LAST_DAY(CURRENT_DATE)<br>
+→&nbsp;<code class="returnvalue">30/09/2022</code></p></div>
+        </td></tr><tr><td>13</td><td>
+<div class="literallayout"><p>EXTRACT(DAY&nbsp;FROM&nbsp;CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">6</code></p></div>
+        </td><td>
+<div class="literallayout"><p>EXTRACT(DAY&nbsp;FROM&nbsp;CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">6</code></p></div>
+        </td><td>
+<div class="literallayout"><p>EXTRACT(DAY&nbsp;FROM&nbsp;CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">6</code></p></div>
+        </td></tr><tr><td>14</td><td>
+<div class="literallayout"><p>TO_CHAR(CURRENT_TIMESTAMP,&nbsp;'D')<br>
+→&nbsp;<code class="returnvalue">3</code><br>
+EXTRACT(DOW&nbsp;FROM&nbsp;CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">2</code></p></div>
+        </td><td>
+<div class="literallayout"><p>TO_CHAR(CURRENT_TIMESTAMP,&nbsp;'D')<br>
+→&nbsp;<code class="returnvalue">3</code></p></div>
+        </td><td>
+<div class="literallayout"><p>TO_CHAR(CURRENT_TIMESTAMP,&nbsp;'D')<br>
+→&nbsp;<code class="returnvalue">3</code><br>
+EXTRACT(DOW&nbsp;FROM&nbsp;CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">3</code></p></div>
+        </td></tr><tr><td>15</td><td>
+<div class="literallayout"><p>DATE('1950-07-16')&nbsp;-<br>
+DATE('1949-11-21')<br>
+→&nbsp;<code class="returnvalue">237</code></p></div>
+        </td><td>
+<div class="literallayout"><p>TO_DATE('1950-07-16')&nbsp;-<br>
+TO_DATE('1949-11-21')<br>
+→&nbsp;<code class="returnvalue">237</code></p></div>
+        </td><td>
+<div class="literallayout"><p>DAYS(DATE('1950-07-16'))&nbsp;-<br>
+DAYS(DATE('1949-11-21'))<br>
+→&nbsp;<code class="returnvalue">237,</code></p></div>
+        </td></tr><tr><td>16</td><td>
+<div class="literallayout"><p>DATE_TRUNC('hour',&nbsp;CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">2022-09-06&nbsp;16:00:00-03</code></p></div>
+        </td><td>
+<div class="literallayout"><p>TRUNC(CURRENT_TIMESTAMP,&nbsp;'HH')<br>
+→&nbsp;<code class="returnvalue">2022-09-06&nbsp;16:00:00</code></p></div>
+        </td><td>
+<div class="literallayout"><p>DATE_TRUNC('hour',&nbsp;CURRENT_TIMESTAMP)<br>
+→&nbsp;<code class="returnvalue">2022-09-06-16.00.00.000000</code></p></div>
+        </td></tr></tbody></table></div></div><br class="table-break"></div><div class="footnotes"><br><hr style="width:100; text-align:left;margin-left: 0"><div id="ftn.id-1.5.8.16.13.5.11.21.2.2.7" class="footnote"><p><a href="https://halleyoliv.gitlab.io/pgdocptbr/functions-datetime.html#id-1.5.8.16.13.5.11.21.2.2.7" class="para"><sup class="para">[73] </sup></a>
+           <a class="ulink" href="https://epiweeks.readthedocs.io/en/latest/index.html" target="_top">Python epiweeks</a>: Um pacote Python para calcular semanas
+           epidemiológicas usando os sistemas de numeração de semanas do
+           <acronym class="acronym">CDC</acronym> dos EUA (MMWR) e <acronym class="acronym">ISO</acronym>.
+           O <acronym class="acronym">CDC</acronym>  dos EUA define a semana (semana MMWR)
+           como sete dias, começando no domingo e terminando no sábado.
+           A <acronym class="acronym">ISO</acronym>  define a semana (semana
+           <acronym class="acronym">ISO</acronym>) como sete dias, começando na
+           segunda-feira e terminando no domingo. Nos dois casos, o
+           final da primeira semana do ano, por definição, deve cobrir
+           pelo menos quatro dias no ano.
+           Os números das semanas variam de 1 a 53 por ano, embora a
+           maioria dos anos possua 52 semanas. (N. T.)
+         </p></div></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr><table width="100%" summary="Navigation footer"><tbody><tr><td class="short" width="40%" align="left"><a accesskey="p" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-formatting.html" title="9.8. Funções de formatação de tipo de dados">Anterior</a>&nbsp;</td><td class="short" width="20%" align="center"><a accesskey="u" href="https://halleyoliv.gitlab.io/pgdocptbr/functions.html" title="Capítulo 9. Funções e operadores">Acima</a></td><td class="short" width="40%" align="right">&nbsp;<a accesskey="n" href="https://halleyoliv.gitlab.io/pgdocptbr/functions-enum.html" title="9.10. Funções de suporte para tipos de dados enum (enumeração)">Próxima</a></td></tr><tr><td class="short" width="40%" align="left" valign="top">9.8. Funções de formatação de tipo de dados&nbsp;</td><td class="short" width="20%" align="center"><a accesskey="h" href="https://halleyoliv.gitlab.io/pgdocptbr/index.html" title="Documentação do PostgreSQL 14.5">Principal</a></td><td class="short" width="40%" align="right" valign="top">&nbsp;9.10. Funções de suporte para tipos de dados enum (enumeração)</td></tr></tbody></table></div>
+</body></html>

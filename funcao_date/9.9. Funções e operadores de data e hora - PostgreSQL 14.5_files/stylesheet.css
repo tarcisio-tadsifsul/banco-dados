@@ -1,0 +1,421 @@
+/* doc/src/sgml/stylesheet.css */
+
+/* color scheme similar to www.postgresql.org */
+
+:root {
+    font-size: 1em;
+}
+
+body {
+    color: Black;
+    background: White;
+    font-family: Geneva, Helvetica, Verdana, Arial, sans-serif;
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-top: 0em;
+}
+
+a:link      { color:DarkRed; }
+a:visited   { color:DarkRed; }
+a:active    { color:DarkRed; }
+a:hover     { color:Crimson; }
+
+a, .link .xref .glossterm {
+    /* font-size: 1.0em !important; */
+}
+
+a.email {
+    /* font-size: 1em !important; */
+}
+
+div, .itemizedlist, .listitem, .sect1 {
+    /* font-size: 1.0em !important; */
+}
+
+h1 {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-top: 0em;
+    margin-bottom: 0em;
+    color: #336699;
+}
+
+h2 {
+    font-size: 1.2em !important;
+    margin: 1.2em 0em 1.2em 0em;
+    font-weight: bold;
+    color: #336699;
+}
+
+.titlepage h2.title,
+.refnamediv h2 {
+    color: #336699;
+}
+
+h3 {
+    font-size: 1.1em;
+    margin: 1.2em 0em 1.2em 0em;
+    font-weight: bold;
+    color: #336699;
+}
+
+h4 {
+    /* font-size: 1em !important; */
+    margin: 1.2em 0em 1.2em 0em;
+    font-weight: bold;
+    color: #336699;
+}
+
+h5 {
+    font-size: 0.9em;
+    margin: 1.2em 0em 1.2em 0em;
+    font-weight: bold;
+    color: #336699;
+}
+
+h6 {
+    font-size: 0.85em;
+    margin: 1.2em 0em 1.2em 0em;
+    font-weight: bold;
+    color: #336699;
+}
+
+p.title {
+    color: #336699;
+}
+
+/* center some titles - Halley 2022-07-07 .book .subtitle */
+
+.book .title, .book .subtitle,
+.book .corpauthor, .book .copyright,
+.book .releaseinfo
+{
+    text-align: center;
+    font-weight: bold;
+    color: #336699;
+}
+
+/* decoration for formal examples */
+
+div.example {
+    padding-left: 15px;
+    border-style: solid;
+    border-width: 0px;
+    border-left-width: 2px;
+    border-color: black;
+    margin: 0.5ex;
+}
+
+/* formatting for entries in tables of functions: indent all but first line */
+
+table, th, td {
+    border-color: #999999;;
+}
+
+th.func_table_entry p,
+td.func_table_entry p {
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+    padding-left: 2em;
+    text-align: left;
+}
+
+p.func_signature {
+    text-indent: -1.5em;
+}
+
+td.func_table_entry pre.programlisting {
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+    padding-left: 1em; /* Halley 4em */
+}
+
+/* formatting for entries in tables of catalog/view columns */
+
+th.catalog_table_entry p,
+td.catalog_table_entry p {
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+    padding-left: 2em;
+    text-align: left;
+}
+
+th.catalog_table_entry p.column_definition {
+    text-indent: -1.5em;
+    word-spacing: 0.25em;
+}
+
+td.catalog_table_entry p.column_definition {
+    text-indent: -1.5em;
+}
+
+p.column_definition code.type {
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+}
+
+td.catalog_table_entry pre.programlisting {
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+    padding-left: 1em; /* Halley 4em */
+}
+
+/* Put these here instead of inside the HTML (see unsetting of
+   admon.style in XSL) so that the web site stylesheet can set its own
+   style. */
+
+.tip,
+.note,
+.important,
+.caution,
+.warning {
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+}
+
+/* miscellaneous */
+
+div.literallayout {
+    font-size: 1.1em !important;
+    font-family: monospace;
+    color: DarkBlue;
+}
+
+pre, .screen, .synopsis, .programlisting {
+    margin-left: 0.5em; /* Halley 4ex; */
+}
+
+/* Halley */
+
+code, .classname, .command, .computeroutput, .constant, .envar,
+      .filename, .function, .literal, .option, .prommpt, .returnvalue,
+      .structfield, .structname, .symbol, .token, .type, .uri,
+      .varname, .sgmltag-element  {
+    color: DarkBlue;
+    text-decoration-line: none;
+    font-family: monospace;
+    font-size: 1.1em !important;
+}
+
+pre, .screen, .programlisting {
+    padding: 0.5em;
+    font-size: 1.1em !important;
+    background-color: #FCFCFC;
+    border-color: #D6D6D6;
+    border-style: solid;
+    border-width: thin;
+    border-radius: .25em;
+    font-family: monospace;
+    color: DarkBlue;
+    overflow-x: auto;
+}
+
+pre.synopsis {
+    padding: 0.5em;
+    font-size: 1.1em !important;
+    background-color: #FCFCFC;
+    border-color: #D6D6D6;
+    border-style: solid;
+    border-width: thin;
+    border-radius: .25em;
+    font-family: monospace;
+    color: #FF6600;
+    overflow-x: auto;
+}
+
+.citation {
+    color: #ff6600;
+}
+
+ul.itemizedlist {
+    margin-left: 1em;
+    padding-inline: 1em  0em;
+}
+
+li.listitem {
+    margin-left: 0.5em;
+    padding-inline: 0em 0em;
+}
+
+.comment    { color: red; }
+
+var {
+    font-family: monospace;
+    font-style: italic;
+}
+
+/* Konqueror's standard style for ACRONYM is italic. */
+/* acronym     { font-style: inherit; }              */
+
+/* make images not too wide on larger screens */
+@media (min-width: 480px) {
+  .mediaobject {
+    width: 50%;
+    float: none;
+    clear: both;
+  }
+}
+
+br.figure-break {
+    float: none;
+    clear: both;
+}
+
+/* em */
+
+.lineannotation {
+    color: #006a4e;
+    text-decoration-line: none;
+}
+
+.parameter {
+    color: #4e006a;
+    text-decoration-line: none;
+    /* font-size: 1em !important; */
+}
+
+.replaceable {
+    color: #4e006a;
+    text-decoration-line: none;
+    /* font-size: 1em !important; */
+    font-style: normal !important;
+}
+
+.wordasword {
+    color: Green;
+    text-decoration-line: none;
+}
+
+.citetitle {
+    color: DarkBlue;
+}
+
+.firstterm {
+    font-style: italic;
+}
+
+/* strong */
+
+.userinput {
+    font-weight: 400 !important;
+}
+
+/* lista */
+
+dl.toc, dd {
+    padding-top: 0em;
+    padding-bottom: 0em;
+}
+
+dt {
+    padding-top: 0.4em;
+    padding-bottom: 0em;
+}
+
+/* tabela */
+
+.table {
+  border-collapse: collapse;
+  overflow-x: auto;
+}
+
+.informaltable {
+  border-collapse: collapse;
+  overflow-x: auto;
+}
+
+th, td {
+  padding: 0.4em;
+}
+
+th {
+  background-color: #FCFFFF;
+}
+
+td.strong {
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+td.short {
+  /* font-size: 1em !important; */
+  padding: 0.2em;
+}
+
+/* span */
+
+.refentrytitle {
+    /* font-size: 1em !important; */
+}
+
+.errortext {
+    color: #006666; /* Verde escuro */
+    text-decoration-line: none;
+}
+
+.keycode {
+    color: DarkBlue;
+    text-decoration-line: none;
+    /* font-size: 1em !important; */
+}
+
+.keysym {
+    color: #0B5345;
+    text-decoration-line: none;
+    /* font-size: 1em !important; */
+    font-weight: 500 !important;
+}
+
+.application, .package, .systemitem, .database, .property {
+    font-style: italic;
+}
+
+.phrase {
+    display: list-item;
+    margin-left: 1em;
+}
+
+.dba {
+    color: OrangeRed;
+    text-decoration-line: none;
+}
+
+/* Abreviatura e acrônimo */
+
+abbr, acronym {
+    text-decoration-line: none;
+    /* font-size: 1em !important; */
+    font-style: inherit;
+}
+
+/* Imagem no topo das páginas */
+
+#docHeader {
+  background-image  : url("extras/cab_back.png");
+  position          : relative;
+  height            : 80px;
+  margin-left       : -1em;
+  margin-right      : -1em;
+  margin-top        : 0em;
+  margin-bottom     : 1em;
+  padding-bottom    : 1em;
+  display           : block;
+}
+
+#docHeaderLogo {
+  position          : relative;
+  width             : 206px;
+  height            : 80px;
+  margin-left       : 2em;
+  border            : 0px;
+  padding           : 0px;
+}
+
+/* Barra horizontal */
+
+hr {
+  border-top        : 1px solid;
+  margin-left       : -1em;
+  margin-right      : -1em;
+  color             : #999999;
+}
