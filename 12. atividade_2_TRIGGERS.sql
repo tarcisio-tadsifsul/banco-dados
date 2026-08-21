@@ -1,97 +1,3 @@
--- QUESTIONARIO 1
-
--- 1. Quais são as linhas de código SQL para implementar as tabelas abaixo
---    e suas respectivas ligações de chaves primarias e estrangeiras?
-
-CREATE TABLE cliente (
-	cod_cliente SERIAL PRIMARY KEY,
-	nome VARCHAR(50),
-	credito NUMERIC(8,2)
-);
-
-CREATE TABLE produto (
-	cod_produto SERIAL PRIMARY KEY,
-	nome VARCHAR(50),
-	quantidade NUMERIC(8,2),
-	valor NUMERIC(8,2)
-);
-
-CREATE TABLE venda (
-	cod_venda SERIAL PRIMARY KEY,
-	fk_cod_cliente INT REFERENCES cliente(cod_cliente),
-	fk_cod_produto INT REFERENCES produto(cod_produto),
-	quantidade NUMERIC(8,2)
-);
-
-
--- 2) Crie uma função “credito” que recebe por parâmetro
---	  a quantidade de credito que o cliente deseja adicionar e o código do cliente.
---	  Posteriormente atualize os dados na tabela.
-
-CREATE OR REPLACE FUNCTION credito(id_cliente INTEGER, qtd_credito NUMERIC)
-RETURNS VOID AS
-$$
-BEGIN
-
-	UPDATE cliente
-	SET credito = qtd_credito
-	WHERE cod_cliente = id_cliente;
-
-	IF (NOT FOUND) THEN
-		RAISE NOTICE 'Cliente não encontrado!';
-	END IF;
-
-	RAISE NOTICE 'Credito do cliente atualizado!';
-
-END;
-$$
-LANGUAGE PLPGSQL;
-
--- 3) Crie uma função chamada “busca_cliente” que receba por parâmetro
---	  o nome de uma cliente e retorne o código deste,
---	  caso não encontre o cliente a função deve retornar -1.
-
-CREATE OR REPLACE FUNCTION busca_cliente(nome_cliente VARCHAR)
-RETURNS INTEGER AS
-$$
-DECLARE id_cliente INTEGER;
-
-BEGIN
-	SELECT cod_cliente INTO id_cliente FROM cliente
-	WHERE nome ILIKE '%nome_cliente%';
-
-	IF (NOT FOUND) THEN
-		RETURN -1;
-	END IF;
-
-	RETURN id_cliente AS cod_cliente;
-
-END;
-$$
-LANGUAGE PLPGSQL;
-
--- 4) Crie uma função chamada “venda” que receba por parâmetro
---	  o código do cliente, o código do produto e a quantidade.
---	  Adicione a venda na tabela venda.
-
-CREATE OR REPLACE FUNCTION venda(id_cliente INTEGER, id_produto INTEGER, qtd_produto NUMERIC)
-RETURNS VOID AS
-$$
-BEGIN
-		INSERT INTO venda VALUES(id_cliente, id_produto, qtd_produto);
-
-END;
-$$
-LANGUAGE PLPGSQL;
-
-
--- 5) Crie um gatilho para Insert na tabela venda, onde cada novo valor,
--- 	  desconte a quantidade de produto do estoque
-
-
-
------------------------------------------------------------------------------
------------------------------------------------------------------------------
 -- Criação da tabela leitor
 CREATE TABLE leitor (
     id SERIAL PRIMARY KEY,
@@ -159,31 +65,74 @@ INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao) VALUES
 (5, 6, '2025-07-06', NULL);
 
 
+-----------------------------------------------------------------------------
+-- 1. Crie um gatilho que registre a data e hora da última atualização de um registro na tabela leitor.
 
---1. Crie um gatilho que registre a data e hora da última atualização de um registro na tabela leitor.
+-- Cria a coluna que recebera a atualizacao
+ALTER TABLE leitor ADD COLUMN atualizacao TIMESTAMP;
 
-CREATE OR REPLACE FUNCTION registrar_data_hora_leitor()
-RETURNS TRIGGER AS
+-- Cria a função do gatilho
+CREATE OR REPLACE FUNCTION registra_update_leitor() RETURNS TRIGGER AS
 $$
-DECLARE
-	data_update := CURRENT_DATE
-	hora_update := CURRENT_TIME
 BEGIN
-	UPDATE FROM leitor SET data_atualizacao = data_update
-	WHERE 
+
+	-- Dentro do NEW já tem os dados do UPDATE leitor,
+	-- por isso a função de gatilho registra_update_leitor pode usar os dados do NEW para já atualizar a tabela leitor
+	NEW.atualizacao := NOW();
+	RETURN NEW;
 
 END;
 $$
 LANGUAGE PLPGSQL;
 
-CREATE TRIGGER trigger_registrar_data_hora_leitor
-AFTER UPDATE ON leitor
-FOR EACH ROW EXECUTE FUNCTION registrar_data_hora_leitor();
+-- Cria gatilho
+CREATE TRIGGER tg_atulizacao_leitor
+BEFORE UPDATE ON leitor
+FOR EACH ROW EXECUTE FUNCTION registra_update_leitor();
 
+-- Teste
+UPDATE leitor SET nome = 'Bruno Costa' WHERE id = 2;
+SELECT * FROM leitor;
 
-
---2. Crie um gatilho que impeça a inserção de um leitor com e-mail duplicado, 
+-----------------------------------------------------------------------------
+-- 2. Crie um gatilho que impeça a inserção de um leitor com e-mail duplicado, 
 --   mesmo ignorando diferenças entre letras maiúsculas e minúsculas.
+
+-- Cria a função do gatilho
+CREATE OR REPLACE FUNCTION verifica_email() RETURNS TRIGGER AS
+$$
+DECLARE
+	registro RECORD;
+BEGIN
+
+	FOR registro IN SELECT email FROM leitor LOOP
+		IF NEW.email = registro.email THEN
+			RETURN NULL;
+			EXIT;
+		END IF;
+	END LOOP;
+	RETURN NEW;
+
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Cria o gatilho
+CREATE OR REPLACE TRIGGER tg_verifica_email
+BEFORE INSERT ON leitor
+FOR EACH ROW
+EXECUTE FUNCTION verifica_email();
+
+-- Teste 1 Não deve passar!
+INSERT INTO leitor (nome, email, telefone)
+VALUES ('Ana Silva', 'ana.silva@email.com', '11999990001');
+
+-- Teste 2 Passa!
+INSERT INTO leitor (nome, email, telefone)
+VALUES ('Ana Leitora', 'ana2.silva@email.com', '11999990021');
+
+SELECT * FROM LEITOR
+
 
 --3-Crie um gatilho que defina automaticamente o campo disponivel = FALSE quando um livro for locado.
 
