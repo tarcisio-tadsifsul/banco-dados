@@ -86,7 +86,7 @@ $$
 LANGUAGE PLPGSQL;
 
 -- Cria gatilho
-CREATE TRIGGER tg_atulizacao_leitor
+CREATE OR REPLACE TRIGGER tg_atulizacao_leitor
 BEFORE UPDATE ON leitor
 FOR EACH ROW EXECUTE FUNCTION registra_update_leitor();
 
@@ -101,16 +101,14 @@ SELECT * FROM leitor;
 -- Cria a função do gatilho
 CREATE OR REPLACE FUNCTION verifica_email() RETURNS TRIGGER AS
 $$
-DECLARE
-	registro RECORD;
 BEGIN
 
-	FOR registro IN SELECT email FROM leitor LOOP
-		IF NEW.email = registro.email THEN
-			RETURN NULL;
-			EXIT;
-		END IF;
-	END LOOP;
+	IF EXISTS (
+		SELECT email FROM leitor WHERE LOWER(email) = LOWER(NEW.email)
+	) THEN
+		RAISE NOTICE '[ERRO] Email já utilizado!';
+		RETURN NULL;
+	END IF;
 	RETURN NEW;
 
 END;
@@ -129,56 +127,121 @@ VALUES ('Ana Silva', 'ana.silva@email.com', '11999990001');
 
 -- Teste 2 Passa!
 INSERT INTO leitor (nome, email, telefone)
-VALUES ('Ana Leitora', 'ana2.silva@email.com', '11999990021');
+VALUES ('Carla Vaz', 'carla.vaz@email.com', '22939750621');
 
 SELECT * FROM LEITOR
 
+-----------------------------------------------------------------------------
+-- 3. Crie um gatilho que defina automaticamente o campo disponivel = FALSE
+--    quando um livro for locado.
 
---3-Crie um gatilho que defina automaticamente o campo disponivel = FALSE quando um livro for locado.
+-- DROP FUNCTION atualiza_disponibilidade;
+-- DROP TRIGGER IF EXISTS tg_atualiza_disponibilidade ON LOCACAO;
 
---4-Crie um gatilho que defina automaticamente o campo disponivel = TRUE quando a data de
---devolução de uma locação for preenchida.
+-- Função do gatilho
+CREATE OR REPLACE FUNCTION atualiza_disponibilidade_livro_locado() RETURNS TRIGGER AS
+$$
+BEGIN
 
+	UPDATE livro SET disponivel = false WHERE livro.id = NEW.livro_id;
+	RETURN NEW;
+
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Gatilho
+CREATE OR REPLACE TRIGGER tg_atualiza_disponibilidade_livro_locado
+AFTER INSERT ON locacao
+FOR EACH ROW EXECUTE FUNCTION atualiza_disponibilidade_livro_locado();
+
+-- Teste
+INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao)
+VALUES (2, 3, '2025-08-22', '2025-08-29')
+
+-----------------------------------------------------------------------------
+-- 4. Crie um gatilho que defina automaticamente o campo disponivel = TRUE
+--	  quando a data de devolução de uma locação for preenchida.
+
+-- Função do gatilho
+CREATE OR REPLACE FUNCTION atualiza_disponibilidade_livro_devolvido() RETURNS TRIGGER AS
+$$
+BEGIN
+
+	IF (OLD.data_devolucao IS NULL) AND (NEW.data_devolucao IS NOT NULL) THEN
+		UPDATE livro SET disponivel = TRUE WHERE livro.id = NEW.livro_id;
+		RETURN NEW;
+	END IF;
+	
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Gatilho
+CREATE OR REPLACE TRIGGER tg_atualiza_disponibilidade_livro_devolvido
+AFTER UPDATE ON locacao
+FOR EACH ROW EXECUTE FUNCTION atualiza_disponibilidade_livro_devolvido();
+
+-- Teste
+UPDATE locacao SET data_devolucao = '2025-07-15' WHERE id = 4;
+
+
+-----------------------------------------------------------------------------
 --5-Crie um gatilho que insira uma mensagem de log em uma tabela chamada log_locacoes 
 --sempre que uma locação for feita.
 
+-----------------------------------------------------------------------------
 --6-Crie um gatilho que proíba a locação de um livro que já está indisponível (disponivel = FALSE).
 
+-----------------------------------------------------------------------------
 --7-Crie um gatilho que envie um aviso (via RAISE NOTICE) ao tentar excluir um leitor 
 --que ainda possui livros não devolvidos.
 
+-----------------------------------------------------------------------------
 --8-Crie um gatilho que registre a quantidade total de locações feitas por um leitor 
 --em uma nova tabela historico_leitor.
 
+-----------------------------------------------------------------------------
 --9-Crie um gatilho que atualize a data da última locação de um livro em uma 
 --coluna ultima_locacao na tabela livro.
 
+-----------------------------------------------------------------------------
 --10-Crie um gatilho que proíba a inserção de locações com data futura.
 
+-----------------------------------------------------------------------------
 --11-Crie um gatilho que normalize o nome do leitor para iniciar com letra maiúscula e o 
 --restante minúsculo ao ser inserido.
 
+-----------------------------------------------------------------------------
 --12-Crie um gatilho que gere automaticamente um número de protocolo na tabela locacao no 
 --formato 'LOC-YYYYMMDD-XXXX'.
 
+-----------------------------------------------------------------------------
 --13-Crie um gatilho que limite um leitor a no máximo 3 livros locados ao mesmo tempo 
 --(sem data de devolução).
 
+-----------------------------------------------------------------------------
 --14-Crie um gatilho que mova automaticamente os dados de uma locação devolvida para uma 
 --tabela locacoes_finalizadas.
 
+-----------------------------------------------------------------------------
 --15-Crie um gatilho que registre qualquer alteração feita no campo email da tabela leitor
 --em uma tabela de auditoria auditoria_email.
 
+-----------------------------------------------------------------------------
 --16-Crie um gatilho que bloqueie locações de leitores com mais de 5 atrasos registrados
 --(pode assumir uma tabela atrasos).
 
+-----------------------------------------------------------------------------
 --17-Crie um gatilho que avise (via RAISE EXCEPTION) se um livro for marcado como disponível
 --sem que todas as locações anteriores estejam com data de devolução.
 
+-----------------------------------------------------------------------------
 --18-Crie um gatilho que calcule automaticamente o número de dias de atraso (se houver)
 --após o preenchimento da data de devolução.
 
+-----------------------------------------------------------------------------
 --19-Crie um gatilho que proíba a exclusão de livros que já foram locados ao menos uma vez.
 
+-----------------------------------------------------------------------------
 --20-Crie um gatilho que atualize um campo qtd_locacoes na tabela livro a cada nova locação feita.
