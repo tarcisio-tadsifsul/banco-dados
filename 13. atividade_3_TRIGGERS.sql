@@ -29,11 +29,11 @@ CREATE TABLE locacao (
 
 
 INSERT INTO leitor (nome, email, telefone) VALUES
-('Ana Silva', 'ana.silva@email.com', '11999990001'),
-('Bruno Costa', 'bruno.costa@email.com', '21988887772'),
-('Carla Souza', 'carla.souza@email.com', '31977776663'),
-('Daniel Rocha', 'daniel.rocha@email.com', '41966665554'),
-('Elisa Martins', 'elisa.martins@email.com', '51955554445');
+('Leitor1', 'Sobrenome1', '11111'),
+('Leitor2', 'Sobrenome2', '22222'),
+('Leitor3', 'Sobrenome3', '33333'),
+('Leitor4', 'Sobrenome4', '44444'),
+('Leitor5', 'Sobrenome5', '55555');
 
 INSERT INTO livro (titulo, autor, ano_publicacao, disponivel) VALUES
 ('Dom Casmurro', 'Machado de Assis', 1899, TRUE),
@@ -43,26 +43,22 @@ INSERT INTO livro (titulo, autor, ano_publicacao, disponivel) VALUES
 ('Harry Potter e a Pedra Filosofal', 'J.K. Rowling', 1997, TRUE),
 ('A Revolução dos Bichos', 'George Orwell', 1945, TRUE);
 
--- Ana Silva pegou "1984" e "O Pequeno Príncipe"
 INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao) VALUES
 (1, 2, '2025-07-01', '2025-07-10'),
 (1, 3, '2025-07-05', NULL);
 
--- Bruno Costa pegou "Dom Casmurro"
 INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao) VALUES
 (2, 1, '2025-07-03', '2025-07-12');
 
--- Carla Souza pegou "Harry Potter"
 INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao) VALUES
 (3, 5, '2025-07-07', NULL);
 
--- Daniel Rocha pegou "Capitães da Areia" e já devolveu
 INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao) VALUES
 (4, 4, '2025-07-02', '2025-07-09');
 
--- Elisa Martins pegou "A Revolução dos Bichos"
 INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao) VALUES
 (5, 6, '2025-07-06', NULL);
+
 
 
 -----------------------------------------------------------------------------
@@ -187,8 +183,43 @@ UPDATE locacao SET data_devolucao = '2025-07-15' WHERE id = 4;
 
 
 -----------------------------------------------------------------------------
---5-Crie um gatilho que insira uma mensagem de log em uma tabela chamada log_locacoes 
---sempre que uma locação for feita.
+-- 5. Crie um gatilho que insira uma mensagem de log em uma tabela chamada log_locacoes 
+--    sempre que uma locação for feita.
+
+-- CRIAR TABELA LOG_LOCACOES
+CREATE TABLE log_locacoes (
+	id SERIAL PRIMARY KEY,
+	data_log DATE NOT NULL DEFAULT CURRENT_DATE,
+	mensagem_log VARCHAR(200) NOT NULL
+)
+
+-- Função Gatilho
+CREATE OR REPLACE FUNCTION insere_log_locacao() RETURNS TRIGGER AS
+$$
+DECLARE
+	msg_log TEXT;
+
+BEGIN
+	msg_log :=  'data_locacao: ' || NEW.data_locacao || ' | leitor id: ' || NEW.leitor_id || ' | livro_id: ' || NEW.livro_id;
+	INSERT INTO log_locacoes (mensagem_log) VALUES (msg_log);
+	-- NÃO TERMINADO!!!!
+	
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Gatilho
+CREATE OR REPLACE TRIGGER tg_insere_log_locacao
+AFTER INSERT ON locacao
+FOR EACH ROW EXECUTE FUNCTION insere_log_locacao();
+
+-- Teste
+INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao)
+VALUES (3, 1, '2025-10-15', NULL);
+
+SELECT * FROM locacao;
+SELECT * FROM log_locacoes;
+
 
 -----------------------------------------------------------------------------
 --6-Crie um gatilho que proíba a locação de um livro que já está indisponível (disponivel = FALSE).
