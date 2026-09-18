@@ -1,3 +1,7 @@
+--=========================--
+-- CRIAÇÃO DE TABELAS BASE --
+--=========================--
+
 -- Criação da tabela leitor
 CREATE TABLE leitor (
     id SERIAL PRIMARY KEY,
@@ -62,7 +66,8 @@ INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao) VALUES
 
 
 -----------------------------------------------------------------------------
--- 1. Crie um gatilho que registre a data e hora da última atualização de um registro na tabela leitor.
+-- 1. Crie um gatilho que registre a data e hora da última atualização
+--    de um registro na tabela leitor.
 
 -- Cria a coluna que recebera a atualizacao
 ALTER TABLE leitor ADD COLUMN atualizacao TIMESTAMP;
@@ -73,7 +78,8 @@ $$
 BEGIN
 
 	-- Dentro do NEW já tem os dados do UPDATE leitor,
-	-- por isso a função de gatilho registra_update_leitor pode usar os dados do NEW para já atualizar a tabela leitor
+	-- por isso a função de gatilho registra_update_leitor
+	-- pode usar os dados do NEW para já atualizar a tabela leitor
 	NEW.atualizacao := NOW();
 	RETURN NEW;
 
@@ -87,12 +93,12 @@ BEFORE UPDATE ON leitor
 FOR EACH ROW EXECUTE FUNCTION registra_update_leitor();
 
 -- Teste
-UPDATE leitor SET nome = 'Bruno Costa' WHERE id = 2;
+UPDATE leitor SET nome = 'Gustavo Borja' WHERE id = 5;
 SELECT * FROM leitor;
 
 -----------------------------------------------------------------------------
 -- 2. Crie um gatilho que impeça a inserção de um leitor com e-mail duplicado, 
---   mesmo ignorando diferenças entre letras maiúsculas e minúsculas.
+--    mesmo ignorando diferenças entre letras maiúsculas e minúsculas.
 
 -- Cria a função do gatilho
 CREATE OR REPLACE FUNCTION verifica_email() RETURNS TRIGGER AS
@@ -102,7 +108,7 @@ BEGIN
 	IF EXISTS (
 		SELECT email FROM leitor WHERE LOWER(email) = LOWER(NEW.email)
 	) THEN
-		RAISE NOTICE '[ERRO] Email já utilizado!';
+		RAISE EXCEPTION '[ERRO] Email já utilizado!';
 		RETURN NULL;
 	END IF;
 	RETURN NEW;
@@ -123,7 +129,7 @@ VALUES ('Ana Silva', 'ana.silva@email.com', '11999990001');
 
 -- Teste 2 Passa!
 INSERT INTO leitor (nome, email, telefone)
-VALUES ('Carla Vaz', 'carla.vaz@email.com', '22939750621');
+VALUES ('Carla Vas', 'carla.vas@email.com', '22939750621');
 
 SELECT * FROM LEITOR
 
@@ -154,6 +160,8 @@ FOR EACH ROW EXECUTE FUNCTION atualiza_disponibilidade_livro_locado();
 -- Teste
 INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao)
 VALUES (2, 3, '2025-08-22', '2025-08-29')
+
+SELECT * FROM locacao;
 
 -----------------------------------------------------------------------------
 -- 4. Crie um gatilho que defina automaticamente o campo disponivel = TRUE
@@ -193,6 +201,8 @@ CREATE TABLE log_locacoes (
 	mensagem_log VARCHAR(200) NOT NULL
 )
 
+SELECT * FROM log_locacoes
+
 -- Função Gatilho
 CREATE OR REPLACE FUNCTION insere_log_locacao() RETURNS TRIGGER AS
 $$
@@ -202,7 +212,7 @@ DECLARE
 BEGIN
 	msg_log :=  'data_locacao: ' || NEW.data_locacao || ' | leitor id: ' || NEW.leitor_id || ' | livro_id: ' || NEW.livro_id;
 	INSERT INTO log_locacoes (mensagem_log) VALUES (msg_log);
-	-- NÃO TERMINADO!!!!
+	RETURN NEW;
 	
 END;
 $$
@@ -222,42 +232,63 @@ SELECT * FROM log_locacoes;
 
 
 -----------------------------------------------------------------------------
---6-Crie um gatilho que proíba a locação de um livro que já está indisponível (disponivel = FALSE).
+-- 6. Crie um gatilho que proíba a locação de um livro que já está indisponível (disponivel = FALSE).
+
+-- Função Gatilho
+CREATE OR REPLACE FUNCTION bloqueia_locacao_livro_indisponivel() RETURNS TRIGGER AS
+$$
+DECLARE status BOOLEAN;
+BEGIN
+	SELECT disponivel INTO status FROM livro WHERE livro_id = NEW.livro_id
+	IF NOT status THEN
+		RAISE EXCEPTION 'Livro ja esta locado!';
+	ELSE
+		RETURN NEW;
+	END IF;
+END;
+$$
+
+-- Gatilho
+-- CONTINUAR...
+
+-- Teste
+SELECT * FROM LIVRO
+
 
 -----------------------------------------------------------------------------
---7-Crie um gatilho que envie um aviso (via RAISE NOTICE) ao tentar excluir um leitor 
---que ainda possui livros não devolvidos.
+-- 7. Crie um gatilho que envie um aviso (via RAISE NOTICE) ao tentar excluir um leitor 
+--    que ainda possui livros não devolvidos.
 
 -----------------------------------------------------------------------------
---8-Crie um gatilho que registre a quantidade total de locações feitas por um leitor 
---em uma nova tabela historico_leitor.
+-- 8. Crie um gatilho que registre a quantidade total de locações feitas por um leitor 
+--    em uma nova tabela historico_leitor.
 
 -----------------------------------------------------------------------------
---9-Crie um gatilho que atualize a data da última locação de um livro em uma 
---coluna ultima_locacao na tabela livro.
+-- 9. Crie um gatilho que atualize a data da última locação de um livro em uma 
+--    coluna ultima_locacao na tabela livro.
 
 -----------------------------------------------------------------------------
---10-Crie um gatilho que proíba a inserção de locações com data futura.
+-- 10. Crie um gatilho que proíba a inserção de locações com data futura.    
 
 -----------------------------------------------------------------------------
---11-Crie um gatilho que normalize o nome do leitor para iniciar com letra maiúscula e o 
---restante minúsculo ao ser inserido.
+-- 11. Crie um gatilho que normalize o nome do leitor para iniciar com letra maiúscula e o 
+--     restante minúsculo ao ser inserido.
 
 -----------------------------------------------------------------------------
---12-Crie um gatilho que gere automaticamente um número de protocolo na tabela locacao no 
---formato 'LOC-YYYYMMDD-XXXX'.
+-- 12. Crie um gatilho que gere automaticamente um número de protocolo na tabela locacao no 
+--     formato 'LOC-YYYYMMDD-XXXX'.
 
 -----------------------------------------------------------------------------
---13-Crie um gatilho que limite um leitor a no máximo 3 livros locados ao mesmo tempo 
---(sem data de devolução).
+-- 13. Crie um gatilho que limite um leitor a no máximo 3 livros locados ao mesmo tempo 
+--     (sem data de devolução).
 
 -----------------------------------------------------------------------------
---14-Crie um gatilho que mova automaticamente os dados de uma locação devolvida para uma 
---tabela locacoes_finalizadas.
+-- 14. Crie um gatilho que mova automaticamente os dados de uma locação devolvida para uma 
+--     tabela locacoes_finalizadas.
 
 -----------------------------------------------------------------------------
---15-Crie um gatilho que registre qualquer alteração feita no campo email da tabela leitor
---em uma tabela de auditoria auditoria_email.
+-- 15. Crie um gatilho que registre qualquer alteração feita no campo email da tabela leitor
+--     em uma tabela de auditoria auditoria_email.
 
 -----------------------------------------------------------------------------
 --16-Crie um gatilho que bloqueie locações de leitores com mais de 5 atrasos registrados
