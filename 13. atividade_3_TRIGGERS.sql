@@ -176,6 +176,9 @@ BEGIN
 		UPDATE livro SET disponivel = TRUE WHERE livro.id = NEW.livro_id;
 		RETURN NEW;
 	END IF;
+
+	-- Retorno se um update for em outra coluna da tabela
+	RETURN NEW;
 	
 END;
 $$
@@ -188,7 +191,7 @@ FOR EACH ROW EXECUTE FUNCTION atualiza_disponibilidade_livro_devolvido();
 
 -- Teste
 UPDATE locacao SET data_devolucao = '2025-07-15' WHERE id = 4;
-
+SELECT * FROM locacao
 
 -----------------------------------------------------------------------------
 -- 5. Crie um gatilho que insira uma mensagem de log em uma tabela chamada log_locacoes 
@@ -239,7 +242,7 @@ CREATE OR REPLACE FUNCTION bloqueia_locacao_livro_indisponivel() RETURNS TRIGGER
 $$
 DECLARE status BOOLEAN;
 BEGIN
-	SELECT disponivel INTO status FROM livro WHERE livro_id = NEW.livro_id
+	SELECT disponivel INTO status FROM livro WHERE id = NEW.livro_id;
 	IF NOT status THEN
 		RAISE EXCEPTION 'Livro ja esta locado!';
 	ELSE
@@ -247,17 +250,60 @@ BEGIN
 	END IF;
 END;
 $$
+LANGUAGE PLPGSQL;
 
 -- Gatilho
--- CONTINUAR...
+CREATE OR REPLACE TRIGGER tgr_bloqueia_locacao
+BEFORE INSERT ON locacao
+FOR EACH ROW EXECUTE FUNCTION bloqueia_locacao_livro_indisponivel();
 
 -- Teste
-SELECT * FROM LIVRO
+INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao)
+VALUES (3, 6, '2025-10-15', NULL);
+
+SELECT * FROM locacao
+SELECT * FROM livro
 
 
 -----------------------------------------------------------------------------
--- 7. Crie um gatilho que envie um aviso (via RAISE NOTICE) ao tentar excluir um leitor 
+-- 7. Crie um gatilho que dispara um RAISE EXCEPTION ao tentar excluir um leitor 
 --    que ainda possui livros não devolvidos.
+
+-- Função Gatilho
+CREATE OR REPLACE FUNCTION cancelar_exclusao_leitor() RETURNS TRIGGER AS
+$$
+DECLARE
+	total_locacoes_aberto INT := 0;
+
+BEGIN
+	
+	-- Contagem de registros de leitor com data devolucao NULL 
+	SELECT COUNT(*) INTO total_locacoes_aberto
+	FROM locacao
+	WHERE leitor_id = OLD.id AND data_devolucao IS NULL;
+
+	-- Lança erro se existe
+	IF total_locacoes_aberto > 0 THEN
+		-- raise exception finaliza a operação sem return
+		RAISE EXCEPTION '[ERRO] Leitor com locacao em aberto!';
+	ELSE
+		-- Executa o DELETE
+		RETURN OLD;
+	END IF;
+
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Gatilho
+CREATE OR REPLACE TRIGGER tgr_bloqueia_excluir_leitor
+BEFORE DELETE ON leitor
+FOR EACH ROW EXECUTE FUNCTION cancelar_exclusao_leitor();
+
+-- Teste
+DELETE FROM leitor WHERE id = 5
+SELECT * FROM leitor;
+SELECT * FROM locacao
 
 -----------------------------------------------------------------------------
 -- 8. Crie um gatilho que registre a quantidade total de locações feitas por um leitor 
