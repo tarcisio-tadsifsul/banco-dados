@@ -190,8 +190,9 @@ AFTER UPDATE ON locacao
 FOR EACH ROW EXECUTE FUNCTION atualiza_disponibilidade_livro_devolvido();
 
 -- Teste
-UPDATE locacao SET data_devolucao = '2025-07-15' WHERE id = 4;
+UPDATE locacao SET data_devolucao = '2025-10-25' WHERE id = 13;
 SELECT * FROM locacao
+SELECT * FROM LIVRO
 
 -----------------------------------------------------------------------------
 -- 5. Crie um gatilho que insira uma mensagem de log em uma tabela chamada log_locacoes 
@@ -309,16 +310,117 @@ SELECT * FROM locacao
 -- 8. Crie um gatilho que registre a quantidade total de locações feitas por um leitor 
 --    em uma nova tabela historico_leitor.
 
+-- CRIAR TABELA historico_leitor
+CREATE TABLE IF NOT EXISTS historico_leitor(
+	id SERIAL PRIMARY KEY,
+	leitor_id INT NOT NULL,
+	total_locacoes INT,
+	data_atualizacao DATE NOT NULL DEFAULT CURRENT_DATE,
+	CONSTRAINT fk_leitor FOREIGN KEY (leitor_id) REFERENCES leitor(id) 
+)
+
+
+-- Função Gatilho
+CREATE OR REPLACE FUNCTION registra_historico_total_locacao() RETURNS TRIGGER AS
+$$
+DECLARE total_atual INT;
+BEGIN
+	-- LOGICA: 
+	SELECT COUNT(*) INTO total_atual FROM locacao WHERE leitor_id = NEW.leitor_id;
+	
+	INSERT INTO historico_leitor (leitor_id, total_locacoes)
+	VALUES(NEW.leitor_id, total_atual);
+	
+	RETURN NEW;
+	
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Gatilho
+CREATE OR REPLACE TRIGGER tgr_registra_historico_total_locacao
+AFTER INSERT ON locacao
+FOR EACH ROW EXECUTE FUNCTION registra_historico_total_locacao();
+
+-- Teste
+INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao)
+VALUES (12, 2, '2025-10-26', NULL);
+
+SELECT * FROM locacao
+select * from historico_leitor;
+
+
 -----------------------------------------------------------------------------
 -- 9. Crie um gatilho que atualize a data da última locação de um livro em uma 
 --    coluna ultima_locacao na tabela livro.
 
+-- ADICIONAR COLUNA NA TABELA LIVRO
+ALTER TABLE livro ADD COLUMN ultima_locacao DATE;
+
+-- Função Gatilho
+CREATE OR REPLACE FUNCTION atualiza_ultima_locacao_livro() RETURNS TRIGGER AS
+$$
+BEGIN
+	-- LOGICA
+	UPDATE livro SET ultima_locacao = CURRENT_DATE
+	WHERE livro.id = NEW.livro_id;
+
+	RETURN NEW;
+	
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Gatilho
+CREATE OR REPLACE TRIGGER tgr_atualiza_ultima_locacao_livro
+AFTER INSERT ON locacao
+FOR EACH ROW EXECUTE FUNCTION atualiza_ultima_locacao_livro()
+
+-- Teste
+INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao)
+VALUES (4, 4, '2025-10-26', NULL);
+
+SELECT * FROM locacao
+SELECT * FROM livro
+
 -----------------------------------------------------------------------------
--- 10. Crie um gatilho que proíba a inserção de locações com data futura.    
+-- 10. Crie um gatilho que proíba a inserção de locações com data futura.   
+
+-- Função Gatilho
+CREATE OR REPLACE FUNCTION bloqueia_locacao_data_futura() RETURNS TRIGGER AS
+$$
+BEGIN
+	-- LOGICA
+	IF (NEW.data_locacao > CURRENT_DATE) THEN
+		RAISE EXCEPTION '[ERRO] Data de Locacao Invalida!';
+		RETURN NULL;
+	END IF;
+
+	RETURN NEW;
+	
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Gatilho
+CREATE OR REPLACE TRIGGER tgr_bloqueia_locacao_data_futura
+BEFORE INSERT ON locacao
+FOR EACH ROW EXECUTE FUNCTION bloqueia_locacao_data_futura();
+
+-- Teste
+INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao)
+VALUES (5, 6, '2026-10-30', NULL);
+
+SELECT * FROM locacao
+SELECT * FROM leitor
+SELECT * FROM livro
 
 -----------------------------------------------------------------------------
 -- 11. Crie um gatilho que normalize o nome do leitor para iniciar com letra maiúscula e o 
 --     restante minúsculo ao ser inserido.
+
+-- CONTINUAR...
+
 
 -----------------------------------------------------------------------------
 -- 12. Crie um gatilho que gere automaticamente um número de protocolo na tabela locacao no 
@@ -337,19 +439,41 @@ SELECT * FROM locacao
 --     em uma tabela de auditoria auditoria_email.
 
 -----------------------------------------------------------------------------
---16-Crie um gatilho que bloqueie locações de leitores com mais de 5 atrasos registrados
---(pode assumir uma tabela atrasos).
+-- 16. Crie um gatilho que bloqueie locações de leitores com mais de 5 atrasos registrados
+--	   (pode assumir uma tabela atrasos).
 
 -----------------------------------------------------------------------------
---17-Crie um gatilho que avise (via RAISE EXCEPTION) se um livro for marcado como disponível
---sem que todas as locações anteriores estejam com data de devolução.
+-- 17. Crie um gatilho que avise (via RAISE EXCEPTION) se um livro for marcado como disponível
+--	   sem que todas as locações anteriores estejam com data de devolução.
 
 -----------------------------------------------------------------------------
---18-Crie um gatilho que calcule automaticamente o número de dias de atraso (se houver)
---após o preenchimento da data de devolução.
+-- 18. Crie um gatilho que calcule automaticamente o número de dias de atraso (se houver)
+--	   após o preenchimento da data de devolução.
 
 -----------------------------------------------------------------------------
---19-Crie um gatilho que proíba a exclusão de livros que já foram locados ao menos uma vez.
+-- 19. Crie um gatilho que proíba a exclusão de livros que já foram locados ao menos uma vez.
 
 -----------------------------------------------------------------------------
---20-Crie um gatilho que atualize um campo qtd_locacoes na tabela livro a cada nova locação feita.
+-- 20. Crie um gatilho que atualize um campo qtd_locacoes na tabela livro a cada nova locação feita.
+
+
+-- SINTAXE INICIAL
+
+-- Função Gatilho
+CREATE OR REPLACE FUNCTION NOME_FUNCAO_GATILHO() RETURNS TRIGGER AS
+$$
+DECLARE var TIPO;
+BEGIN
+	-- LOGICA
+	
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Gatilho
+CREATE OR REPLACE TRIGGER tgr_NOME_GATILHO
+AFTER/BEFORE INSERT/UPDATE/DELETE/ ON TABELA
+FOR EACH ROW EXECUTE FUNCTION NOME_FUNCAO_GATILHO()
+
+-- Teste
+SELECT * FROM TABELA

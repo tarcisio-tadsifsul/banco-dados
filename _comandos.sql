@@ -12,6 +12,9 @@ UPDATE TABELA SET COLUNA2 = 150 WHERE COLUNA1 = 'Produto A';
 Consulta SQL:
 SELECT * FROM TABELA WHERE COLUNA2 > 120;
 
+ALTER TABLE nome_da_tabela 
+ADD COLUMN nome_da_coluna tipo_de_dados [restricoes];
+
 Estrutura de Função:
     CREATE OR REPLACE FUNCTION nome_da_funcao(parametro TIPO) RETURNS TIPO AS
     $$
@@ -29,6 +32,32 @@ Estrutura de Função:
 Deletar Função:
 DROP FUNCTION nome_da_funcao(TIPO);
 
+--
+
+-- SINTAXE INICIAL GATILHOS
+
+-- Função Gatilho
+CREATE OR REPLACE FUNCTION NOME_FUNCAO_GATILHO() RETURNS TRIGGER AS
+$$
+DECLARE var TIPO;
+BEGIN
+	-- LOGICA
+	
+END;
+$$
+
+-- Gatilho
+CREATE OR REPLACE TRIGGER tgr_NOME_GATILHO
+AFTER/BEFORE INSERT/UPDATE/DELETE/ ON TABELA
+FOR EACH ROW EXECUTE NOME_FUNCAO_GATILHO
+
+-- Teste
+SELECT * FROM TABELA
+
+--
+
+ALTER TABLE nome_da_tabela 
+ALTER COLUMN nome_da_coluna TYPE novo_tipo_de_dados;
 
 --
 
