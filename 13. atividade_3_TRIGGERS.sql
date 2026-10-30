@@ -161,7 +161,7 @@ FOR EACH ROW EXECUTE FUNCTION atualiza_disponibilidade_livro_locado();
 INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao)
 VALUES (2, 3, '2025-08-22', '2025-08-29')
 
-SELECT * FROM locacao;
+SELECT * FROM locacao
 
 -----------------------------------------------------------------------------
 -- 4. Crie um gatilho que defina automaticamente o campo disponivel = TRUE
@@ -204,8 +204,6 @@ CREATE TABLE log_locacoes (
 	data_log DATE NOT NULL DEFAULT CURRENT_DATE,
 	mensagem_log VARCHAR(200) NOT NULL
 )
-
-SELECT * FROM log_locacoes
 
 -- Função Gatilho
 CREATE OR REPLACE FUNCTION insere_log_locacao() RETURNS TRIGGER AS
@@ -344,7 +342,7 @@ FOR EACH ROW EXECUTE FUNCTION registra_historico_total_locacao();
 
 -- Teste
 INSERT INTO locacao (leitor_id, livro_id, data_locacao, data_devolucao)
-VALUES (12, 2, '2025-10-26', NULL);
+VALUES (3, 2, '2025-10-26', NULL);
 
 SELECT * FROM locacao
 select * from historico_leitor;
@@ -419,12 +417,55 @@ SELECT * FROM livro
 -- 11. Crie um gatilho que normalize o nome do leitor para iniciar com letra maiúscula e o 
 --     restante minúsculo ao ser inserido.
 
--- CONTINUAR...
+-- Função Gatilho
+CREATE OR REPLACE FUNCTION normaliza_nome_leitor() RETURNS TRIGGER AS
+$$
+BEGIN
+	UPDATE leitor SET nome = INITCAP(NEW.nome)
+	WHERE leitor.id = NEW.id;
 
+	RETURN NEW;
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Gatilho
+CREATE OR REPLACE TRIGGER tgr_normaliza_nome_leitor
+AFTER INSERT ON leitor
+FOR EACH ROW EXECUTE FUNCTION normaliza_nome_leitor();
+
+-- Teste
+INSERT INTO leitor (nome, email, telefone) VALUES
+('programano bites', 'email@email.com', '11988887777')
+
+SELECT * FROM leitor;
 
 -----------------------------------------------------------------------------
 -- 12. Crie um gatilho que gere automaticamente um número de protocolo na tabela locacao no 
 --     formato 'LOC-YYYYMMDD-XXXX'.
+
+ALTER TABLE locacao ADD COLUMN protocolo VARCHAR(20)
+
+-- Função Gatilho
+CREATE OR REPLACE FUNCTION cria_protocolo_locacao() RETURN TRIGGER AS
+$$
+BEGIN
+	
+
+END;
+$$
+LANGUAGE PLPGSQL;
+
+-- Gatilho
+CREATE OR REPLACE tgr_cria_protocolo_locacao
+AFTER INSERT ON locaco
+FOR EACH ROW EXECUTE FUNCTION cria_protocolo_locacao();
+
+-- Teste
+
+
+SELECT * FROM LOCACAO;
+SELECT CONCAT_WS AS PROTOCOLO
 
 -----------------------------------------------------------------------------
 -- 13. Crie um gatilho que limite um leitor a no máximo 3 livros locados ao mesmo tempo 
