@@ -92,9 +92,9 @@ INSERT INTO produtos (nome, preco) VALUES
 ('Atualização de Servidores', 6000.00);
 
 -- 4. Inserindo Oportunidades
-INSERT INTO oportunidades (fk_lead, fk_vendedor, status, etapa_funil) VALUES
-(1, 2, 'ganho', 'fechamento'),
-(2, 1, 'ativo', 'proposta'),
+INSERT INTO oportunidades (fk_lead, fk_vendedor, status, etapa_funil, criado_em, atualizado_em) VALUES
+(1, 2, 'ganho', 'fechamento', '2026-11-01', '2026-11-20'),
+(2, 1, 'ativo', 'proposta' '2026-11-01', '2026-11-10'),
 (3, 3, 'perdido', 'qualificacao'),
 (4, 4, 'ativo', 'novo'),
 (5, 1, 'ganho', 'fechamento'),
@@ -129,4 +129,60 @@ INSERT INTO VENDAS (fk_oportunidade, forma_pagto) VALUES
 (10, 'Pix'),
 (1, 'Cartão de Crédito'),
 (5, 'Boleto 30 dias');
+
+--================--
+-- FUNÇÕES DE USO --
+--================--
+
+-- leads_por_etapa_funil(inicio, fim)
+-- Dá a visão de como está o funil de vendas.
+
+--SELECT * FROM oportunidades;
+--SELECT COUNT(status) AS total_leads, etapa_funil  FROM oportunidades GROUP BY etapa_funil;
+
+CREATE OR REPLACE FUNCTION leads_por_etapa_funil(DATE, DATE) RETURNS SETOF oportunidades AS
+$$
+BEGIN
+
+	
+
+END;
+$$
+LANGUAGE PLPGSQL;
+
+
+
+-- taxa_conversao_leads(inicio, fim)
+-- Mede a eficiência comercial.
+
+
+-- calcular_total_oportunidade(id)
+-- Calcula o valor total do "carrinho".
+
+
+-- calcular_total_vendas_vendedor(id, mes, ano)
+-- Mede o desempenho financeiro da equipa.
+
+
+-- total_vendas_por_produto(id)
+-- Mostra a quantidade total vendida de um item.
+
+
+-- -- SINTAXE
+-- CREATE OR REPLACE FUNCTION nome_funcao(args1, args2...) RETURNS TIPO_RETORNO AS
+-- $$
+-- DECLARE
+-- 	nome_var TIPO;
+-- BEGIN
+-- 	SELECTs, LOGICA, RETORNO	
+-- END;
+-- $$
+-- LANGUAGE PLPGSQL;
+
+-- -- EXECUTA FUNÇÃO
+-- SELECT nome_funcao(params1, params2...);
+
+--==================--
+-- FUNÇÕES GATILHOS --
+--==================--
 

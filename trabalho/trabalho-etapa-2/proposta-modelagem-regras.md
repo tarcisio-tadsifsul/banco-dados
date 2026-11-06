@@ -59,9 +59,9 @@ Este projeto propoe a modelagem de dados para sistema de gerenciamento de client
 +----+---------+------------+---------------+----------+-------------+-------------+
 | id | lead_id | criado_em  | atualizado_em | status   | etapa_funil | vendedor_id |
 +----+---------+------------+---------------+----------+-------------+-------------+
-| 1  | 1       | 2026-06-15 | 2026-06-15    | ativo    | venda       | 12345       |
-| 2  | 2       | 2026-09-15 | 2026-09-16    | ativo    | orcamento   | 67890       |
-| 3  | 2       | 2026-10-15 | 2026-10-20    | inativo  | perdido     | 12345       |
+| 1  | 1       | 2026-06-15 | 2026-06-15    | ganho    | fechamento  | 1           |
+| 2  | 2       | 2026-09-15 | 2026-09-16    | ativo    | proposta    | 2           |
+| 3  | 2       | 2026-10-15 | 2026-10-20    | inativo  | perdido     | 3           |
 +----+---------+------------+---------------+----------+-------------+-------------+
 ```
 
@@ -116,8 +116,10 @@ Este projeto propoe a modelagem de dados para sistema de gerenciamento de client
 ```
 
 ---
-
 ## FUNÇÕES
+---
+
+
 
 ### FUNÇÕES BÁSICAS
 
